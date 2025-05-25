@@ -14,3 +14,16 @@
   }
 }
 
+.ProseMirror:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.ProseMirror {
+  min-height: 100%;
+  padding-top: 1rem;
+  outline: none !important;
+  user-select: text !important;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

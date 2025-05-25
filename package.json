@@ -10,6 +10,11 @@
   },
   "dependencies": {
     "@lucia-auth/adapter-sqlite": "^3.0.2",
+    "@tiptap/extension-highlight": "^2.12.0",
+    "@tiptap/extension-image": "^2.12.0",
+    "@tiptap/extension-placeholder": "^2.12.0",
+    "@tiptap/react": "^2.12.0",
+    "@tiptap/starter-kit": "^2.12.0",
     "better-sqlite3": "^11.10.0",
     "lucia": "^3.2.2",
     "lucide-react": "^0.511.0",
