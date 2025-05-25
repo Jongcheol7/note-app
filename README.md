@@ -33,6 +33,14 @@ Google Cloud Console에서 발급받은 Client ID, Client Secret, 그리고 Redi
 
 ---
 
+## 3-1. `/api/auth/google` – Google 로그인 시작 요청
+
+이 경로는 사용자가 “구글로 로그인” 버튼을 눌렀을 때 처음 호출되는 로그인 시작 지점입니다.  
+서버는 먼저 CSRF 방지를 위한 임의의 `state` 값을 생성하고, 이 값을 쿠키에 저장합니다.  
+그 후 Lucia의 Google provider를 통해 로그인 URL을 생성하며, 이 URL에는 client ID, redirect URI, scope, state 등이 자동으로 포함됩니다.  
+마지막으로 서버는 해당 로그인 URL로 사용자를 리다이렉트시켜 구글 로그인 페이지로 이동시킵니다.  
+이 흐름을 통해 보안이 강화된 상태에서 구글 로그인을 시작할 수 있습니다.
+
 ## 4. 세션과 쿠키
 
 Lucia는 `createSession()`을 통해 DB에 세션 정보를 저장하고,  

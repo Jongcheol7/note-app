@@ -1,9 +1,9 @@
-import Image from "next/image";
+import NoteLists from "@/components/note/NoteLists";
 
-export default function Home() {
+export default async function Home() {
   return (
     <div>
-      <div className="text-5xl">안녕</div>
+      <NoteLists />
     </div>
   );
 }

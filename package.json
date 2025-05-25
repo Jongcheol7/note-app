@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@lucia-auth/adapter-sqlite": "^3.0.2",
-    "@lucia-auth/oauth": "^3.5.3",
     "better-sqlite3": "^11.10.0",
     "lucia": "^3.2.2",
+    "lucide-react": "^0.511.0",
     "next": "15.1.8",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
