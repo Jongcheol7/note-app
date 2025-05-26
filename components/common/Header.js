@@ -2,20 +2,17 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useUserStore } from "@/store/UserStore";
-import { Home } from "lucide-react";
+import { Home, LogIn, LogOut } from "lucide-react";
+import Image from "next/image";
 
 export default function Header({ initialUser }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const user = useUserStore((state) => state.user);
-  const setUser = useUserStore((state) => state.setUser);
-
-  console.log("initialUser : ", initialUser);
+  const { user, setUser, logout } = useUserStore();
 
   useEffect(() => {
-    if (!initialUser) {
-      setUser(initialUser);
-    }
-  }, [initialUser, setUser]);
+    if (initialUser) setUser(initialUser);
+    else logout();
+  }, [initialUser, setUser, logout]);
 
   return (
     <>
@@ -51,8 +48,8 @@ export default function Header({ initialUser }) {
           isMenuOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 z-30 font-bold`}
       >
-        <div className="flex justify-between items-center px-3 py-3">
-          <p className="text-lg">종철Note!!</p>
+        <div className="flex justify-between items-center px-3 py-2 mt-3 mb-7">
+          <p className="text-2xl">📒 Dev Note 📒</p>
           <button
             className="text-2xl hover:text-red-800 transition-all duration-200"
             onClick={() => setIsMenuOpen(false)}
@@ -61,35 +58,67 @@ export default function Header({ initialUser }) {
             ×
           </button>
         </div>
-        <nav className="flex flex-col px-3 gap-3">
-          <Link
-            href={"/"}
-            onClick={() => setIsMenuOpen(false)}
-            className="w-fit hover:text-blue-800 transition duration-300"
-          >
-            🗑 휴지통
-          </Link>
-          <Link
-            href={"/"}
-            onClick={() => setIsMenuOpen(false)}
-            className="w-fit hover:text-blue-800 transition duration-300"
-          >
-            🔔 알림
-          </Link>
-          <Link
-            href={"/"}
-            onClick={() => setIsMenuOpen(false)}
-            className="w-fit hover:text-blue-800 transition duration-300"
-          >
-            🔒 비밀노트
-          </Link>
+        <nav className="flex flex-col px-3 h-[calc(100%-64px)] justify-between">
+          <div className="flex flex-col gap-3">
+            {user?.user.picture && (
+              <div className="flex  items-center gap-3 mb-5">
+                <Image
+                  src={user.user.picture}
+                  alt="구글 프로필"
+                  width={64}
+                  height={64}
+                  className="rounded-full"
+                />
+                <p className="mt-2 text-sm font-semibold">
+                  {user.user.name}님 안녕하세요!
+                </p>
+              </div>
+            )}
+            <Link
+              href={"/"}
+              onClick={() => setIsMenuOpen(false)}
+              className="w-fit hover:text-blue-800 transition duration-300"
+            >
+              🗑 휴지통
+            </Link>
+            <Link
+              href={"/"}
+              onClick={() => setIsMenuOpen(false)}
+              className="w-fit hover:text-blue-800 transition duration-300"
+            >
+              🔔 알림
+            </Link>
+            <Link
+              href={"/"}
+              onClick={() => setIsMenuOpen(false)}
+              className="w-fit hover:text-blue-800 transition duration-300"
+            >
+              🔒 비밀노트
+            </Link>
+          </div>
 
-          <div className="flex flex-col gap-3 mt-6 border-t pt-3">
+          <div className="flex flex-col gap-3 border-t pt-2 mb-10">
             <button
-              onClick={() => (window.location.href = "/api/auth/google")}
+              onClick={async () => {
+                if (!user) window.location.href = "/api/auth/google";
+                else {
+                  await fetch("/api/auth/google/logout");
+                  logout();
+                }
+              }}
               className="text-left w-fit hover:text-blue-800 transition duration-300"
             >
-              🔐 로그인
+              {user ? (
+                <div className="flex gap-2">
+                  <LogOut />
+                  <span>로그아웃</span>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <LogIn />
+                  <span>로그인</span>
+                </div>
+              )}
             </button>
             <Link
               href={"/"}
