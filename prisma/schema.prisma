@@ -1,15 +1,55 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
-// 어떤 DB를 사용할건지 정의(현재는 sqlite 사용)
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id
+  password        String?
+  name            String
+  email           String
+  picture         String?
+
+  sessions        Session[]
+  categories      Category[]
+  notes           Note[]
+}
+
+model Session {
+  id              String    @id
+  userId          String
+  expiresAt       Int
+
+  user            User      @relation(fields: [userId], references: [id])
+}
+
+model Category {
+  categoryNo      Int       @id @default(autoincrement())
+  name            String  
+  userId          String
+  sortOrder       Int       @default(0)
+  inputDatetime   DateTime  @default(now())
+
+  user            User      @relation(fields: [userId], references: [id])
+  notes           Note[]
+}
+
+model Note {
+  noteNo        Int       @id @default(autoincrement())
+  userId        String
+  title         String
+  content       String
+  thumnail      String?
+  categoryNo    Int?
+  sortOrder     Int       @default(0)
+  inputDatetime DateTime  @default(now())
+  modDatetime   DateTime?
+  delDatetime   DateTime?
+
+  user          User      @relation(fields:[userId], references:[id])
+  category      Category? @relation(fields:[categoryNo],references:[categoryNo])
 }

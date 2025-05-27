@@ -1,12 +1,16 @@
 "use client";
 import Editor from "@/components/note/Editor";
 import NoteToolbar from "@/components/note/NoteToolbar";
+import { useNoteMutation } from "@/store/useNoteMutation";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 export default function NoteWritePage() {
   const [editor, setEditor] = useState(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const { mutate, isPending } = useNoteMutation();
+  const router = useRouter();
 
   // editor가 업데이트 될때마다 내용 추출해서 저장하자
   useEffect(() => {
@@ -30,13 +34,22 @@ export default function NoteWritePage() {
         />
         <button
           className="bg-gray-400 rounded-md py-1 px-2 hover:bg-gray-500 duration-100"
-          onClick={async () => {
-            await fetch("/api/note/save", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ title, content }),
-            });
-            alert("저장완료!");
+          onClick={() => {
+            mutate(
+              {
+                title,
+                thumnail: null,
+                category_id: null,
+                sort_order: 0,
+                content,
+              },
+              {
+                onSuccess: () => {
+                  alert("✅ 저장 완료!");
+                  router.push("/");
+                },
+              }
+            );
           }}
         >
           저장

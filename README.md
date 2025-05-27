@@ -63,3 +63,5 @@ Lucia는 `createSession()`을 통해 DB에 세션 정보를 저장하고,
 
 Lucia는 Kakao, Naver 등 다른 OAuth provider도 유사한 방식으로 추가할 수 있으며,  
 Google 외에도 다양한 로그인 방식을 통합 관리할 수 있도록 설계되어 있습니다.
+
+## npx prisma studio 로 db 직접 확인가능
