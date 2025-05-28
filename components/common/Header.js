@@ -1,18 +1,15 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useUserStore } from "@/store/UserStore";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { useState } from "react";
 import { Home, LogIn, LogOut } from "lucide-react";
 import Image from "next/image";
 
-export default function Header({ initialUser }) {
+export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, setUser, logout } = useUserStore();
-
-  useEffect(() => {
-    if (initialUser) setUser(initialUser);
-    else logout();
-  }, [initialUser, setUser, logout]);
+  const { data: session, status } = useSession();
+  console.log("헤더 레이아웃 session : ", session);
+  console.log("헤더 레이아웃 status : ", status);
 
   return (
     <>
@@ -60,17 +57,17 @@ export default function Header({ initialUser }) {
         </div>
         <nav className="flex flex-col px-3 h-[calc(100%-64px)] justify-between">
           <div className="flex flex-col gap-3">
-            {user?.user.picture && (
+            {session?.user.image && (
               <div className="flex  items-center gap-3 mb-5">
                 <Image
-                  src={user.user.picture}
+                  src={session.user.image}
                   alt="구글 프로필"
                   width={64}
                   height={64}
                   className="rounded-full"
                 />
                 <p className="mt-2 text-sm font-semibold">
-                  {user.user.name}님 안녕하세요!
+                  {session.user.name}님 안녕하세요!
                 </p>
               </div>
             )}
@@ -100,15 +97,11 @@ export default function Header({ initialUser }) {
           <div className="flex flex-col gap-3 border-t pt-2 mb-10">
             <button
               onClick={async () => {
-                if (!user) window.location.href = "/api/auth/google";
-                else {
-                  await fetch("/api/auth/google/logout");
-                  logout();
-                }
+                session ? signOut() : signIn("google");
               }}
               className="text-left w-fit hover:text-blue-800 transition duration-300"
             >
-              {user ? (
+              {session ? (
                 <div className="flex gap-2">
                   <LogOut />
                   <span>로그아웃</span>

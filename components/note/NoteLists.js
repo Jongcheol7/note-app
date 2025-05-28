@@ -5,7 +5,10 @@ import Link from "next/link";
 export default function NoteLists() {
   const { data, isLoading, isError, error } = useNoteLists();
   if (isLoading) return <p>메모를 불러오는 중입니다...</p>;
-  if (isError) return <p>에러가 발생했습니다... : {error}</p>;
+  if (isError)
+    return (
+      <p>에러가 발생했습니다... : {error?.message ?? "알 수 없는 오류"}</p>
+    );
   if (!data || data.length === 0)
     return (
       <div>

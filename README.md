@@ -65,3 +65,5 @@ Lucia는 Kakao, Naver 등 다른 OAuth provider도 유사한 방식으로 추가
 Google 외에도 다양한 로그인 방식을 통합 관리할 수 있도록 설계되어 있습니다.
 
 ## npx prisma studio 로 db 직접 확인가능
+
+## npm 패키지 버전보는법 npm view @lucia-auth/adapter-prisma versions

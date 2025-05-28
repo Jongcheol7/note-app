@@ -8,23 +8,52 @@ datasource db {
 }
 
 model User {
-  id              String    @id
-  password        String?
-  name            String
-  email           String
-  picture         String?
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
 
-  sessions        Session[]
-  categories      Category[]
-  notes           Note[]
+  sessions      Session[]
+  categories    Category[]
+  accounts      Account[]
+  notes         Note[]
+
+  @@map("user")
 }
 
-model Session {
-  id              String    @id
-  userId          String
-  expiresAt       Int
+// ✅ 소셜 계정 정보 테이블 (OAuth 로그인한 경우 이 테이블에 저장됨)
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
 
-  user            User      @relation(fields: [userId], references: [id])
+  // 관계 설정
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+  @@map("account")
+}
+
+// ✅ 세션 테이블 (로그인 유지용)
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  // 관계 설정
+  user User @relation(fields: [userId], references: [id])
+  @@map("session")
 }
 
 model Category {
@@ -36,6 +65,8 @@ model Category {
 
   user            User      @relation(fields: [userId], references: [id])
   notes           Note[]
+
+  @@map("category")
 }
 
 model Note {
@@ -52,4 +83,6 @@ model Note {
 
   user          User      @relation(fields:[userId], references:[id])
   category      Category? @relation(fields:[categoryNo],references:[categoryNo])
+
+  @@map("note")
 }
