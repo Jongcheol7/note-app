@@ -5,7 +5,7 @@ export function useNoteMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (noteData) => {
-      axios.post("/api/note/save", noteData).then((res) => res.data);
+      axios.post("/api/notes/save", noteData).then((res) => res.data);
     },
     onSuccess: () => {
       // 작성 성공시 노트 캐시를 무효화해서 다시 불러올수 있도록 하자..

@@ -5,6 +5,7 @@ import { useNoteMutation } from "@app/notes/hooks/useNoteMutation";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import CategoryPopup from "@app/notes/components/CategoryPopup";
+import { useCategoryLists } from "../hooks/useCategoryLists";
 
 export default function WritePage() {
   const [editor, setEditor] = useState(null);
@@ -13,11 +14,27 @@ export default function WritePage() {
   const { mutate, isPending } = useNoteMutation();
   const router = useRouter();
   const [categories, setCategories] = useState([
-    { id: 0, name: "➕ 추가" },
-    { id: 1, name: "분류되지 않음" },
+    { id: -2, name: "➕ 추가" },
+    { id: -1, name: "분류되지 않음" },
   ]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState(1);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(-1);
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
+
+  const { data: categoryData, refetch } = useCategoryLists();
+  // 카테고리 데이터를 가져오자
+  useEffect(() => {
+    if (categoryData) {
+      const converted = [
+        { id: -2, name: "➕ 추가" },
+        { id: -1, name: "분류되지 않음" },
+        ...categoryData.map((category) => ({
+          id: category.categoryNo,
+          name: category.name,
+        })),
+      ];
+      setCategories(converted);
+    }
+  }, [categoryData]);
 
   // editor가 업데이트 될때마다 내용 추출해서 저장하자
   useEffect(() => {
@@ -45,35 +62,29 @@ export default function WritePage() {
           key={selectedCategoryId}
           onChange={(e) => {
             const selected = e.target.value;
-            if (selected === "add") {
+            if (selected === "-2") {
               setShowCategoryPopup(true);
             } else {
-              setSelectedCategoryId(selected);
+              setSelectedCategoryId(Number(selected));
             }
           }}
         >
-          <option value="add">➕ 추가</option>
-          {categories
-            .filter((cat) => cat.id !== 0 && cat.id !== "add")
-            .map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
+          {/* <option value="add">➕ 추가</option> */}
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
         </select>
 
         {showCategoryPopup && (
           <div>
             <CategoryPopup
-              onCancel={() => setShowCategoryPopup(false)}
-              onAdd={(newOne) => {
-                const newCategory = {
-                  id: categories.length + 1,
-                  name: newOne,
-                };
-                setCategories([...categories, newCategory]);
-                setSelectedCategoryId(newCategory.id);
-                setShowCategoryPopup(false);
+              onCancel={(data) => {
+                if (data) {
+                  refetch();
+                }
+                return setShowCategoryPopup(false);
               }}
             />
             <div
@@ -85,13 +96,15 @@ export default function WritePage() {
 
         <button
           className="bg-green-400 rounded-md py-1 px-2 hover:bg-gray-500 duration-100"
+          disabled={isPending}
           onClick={() => {
             mutate(
               {
                 title,
                 thumnail: null,
-                category_id: null,
-                sort_order: 0,
+                categoryMo:
+                  selectedCategoryId === -1 ? null : selectedCategoryId,
+                sortOrder: 0,
                 content,
               },
               {
@@ -103,7 +116,7 @@ export default function WritePage() {
             );
           }}
         >
-          저장
+          {isPending ? "저장중" : "저장"}
         </button>
       </div>
 

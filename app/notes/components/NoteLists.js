@@ -22,7 +22,7 @@ export default function NoteLists() {
       <div className="p-4 space-y-3">
         {data.map((note) => (
           <div
-            key={note.note_no}
+            key={note.noteNo}
             className="p-4 bg-white rounded shadow border border-gray-100"
           >
             <h2 className="text-lg font-bold">{note.title}</h2>
@@ -37,7 +37,7 @@ export default function NoteLists() {
 export function AddButton() {
   return (
     <Link
-      href={"/note/note-write"}
+      href={"/notes/write"}
       className="absolute right-4 bottom-4 h-12 w-12 z-40 rounded-xl flex items-center justify-center bg-gray-800 text-white font-bold text-2xl shadow-md"
     >
       +

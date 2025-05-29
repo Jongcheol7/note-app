@@ -1,8 +1,26 @@
 import { useRef } from "react";
+import { useCategoryMutation } from "@app/notes/hooks/useCategoryMutation";
 
-export default function CategoryPopup({ onCancel, onAdd }) {
+export default function CategoryPopup({ onCancel }) {
   const sampleList = ["쇼핑", "개인적인", "일기", "학교"];
   const inputRef = useRef();
+  const { mutate, isPending } = useCategoryMutation();
+
+  const handleAddCategory = (categoryName) => {
+    if (!categoryName) return;
+    mutate(
+      {
+        categoryName: categoryName,
+      },
+      {
+        onSuccess: (data) => {
+          console.log("카테고리 저장 성공으로 받은 data : ", data);
+          return onCancel(data);
+        },
+      }
+    );
+  };
+
   return (
     <div
       className="fixed bg-white left-1/2 -translate-x-1/2 
@@ -26,18 +44,19 @@ export default function CategoryPopup({ onCancel, onAdd }) {
         ))}
       </ul>
       <div className="flex gap-5 justify-end mr-6">
-        <button className="text-blue-500 font-bold" onClick={onCancel}>
+        <button
+          className="text-blue-500 font-bold"
+          onClick={onCancel}
+          disabled={isPending}
+        >
           취소
         </button>
         <button
           className="text-blue-500 font-bold"
-          onClick={() => {
-            //oncancel();
-            console.log(inputRef.current.value);
-            return onAdd(inputRef.current.value);
-          }}
+          onClick={() => handleAddCategory(inputRef.current.value)}
+          disabled={isPending}
         >
-          추가
+          {isPending ? "추가중" : "추가"}
         </button>
       </div>
     </div>
