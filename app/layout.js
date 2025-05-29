@@ -1,7 +1,7 @@
 import "./globals.css";
-import Header from "@/components/common/Header";
-import ReactQueryProvider from "@/components/common/ReactQueryProvider";
-import SessionWrapper from "@/components/common/SessionProvider";
+import Header from "@components/common/Header";
+import ReactQueryProvider from "@components/common/ReactQueryProvider";
+import SessionWrapper from "@components/common/SessionProvider";
 
 export default async function RootLayout({ children }) {
   return (

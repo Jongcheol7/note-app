@@ -1,5 +1,5 @@
 import { lucia } from "@/lib/auth";
-import { insertCategory, insertNote } from "@/lib/note-db";
+//import { insertCategory, insertNote } from "@/lib/note-db";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 

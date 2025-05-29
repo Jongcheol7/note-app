@@ -8,7 +8,7 @@ export function useNoteLists() {
     queryKey: ["noteLists"],
     queryFn: async () => {
       try {
-        const res = await axios.get("/api/note");
+        const res = await axios.get("/api/notes");
         return res.data;
       } catch (err) {
         // 👇 여기서 라우트에서 보낸 메시지를 직접 추출해서 에러로 던져줌

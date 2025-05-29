@@ -1,12 +1,12 @@
 "use client";
-import Editor from "@/components/note/Editor";
-import NoteToolbar from "@/components/note/NoteToolbar";
-import { useNoteMutation } from "@/store/useNoteMutation";
+import Editor from "@app/notes/components/Editor";
+import NoteToolbar from "@app/notes/components/NoteToolbar";
+import { useNoteMutation } from "@app/notes/hooks/useNoteMutation";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import CategoryPopup from "./CategoryPopup";
+import CategoryPopup from "@app/notes/components/CategoryPopup";
 
-export default function NoteWritePage() {
+export default function WritePage() {
   const [editor, setEditor] = useState(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");

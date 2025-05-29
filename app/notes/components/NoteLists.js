@@ -1,5 +1,5 @@
 "use client";
-import { useNoteLists } from "@/store/useNoteLists";
+import { useNoteLists } from "@app/notes/hooks/useNoteLists";
 import Link from "next/link";
 
 export default function NoteLists() {

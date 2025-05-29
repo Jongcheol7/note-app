@@ -11,7 +11,7 @@ import {
   Check,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import useVolumeAnalyser from "./RecordAnalyseVolume";
+import useVolumeAnalyser from "@/components/common/RecordAnalyseVolume";
 
 export default function NoteToolbar({ editor }) {
   const fileInputRef = useRef(null);
