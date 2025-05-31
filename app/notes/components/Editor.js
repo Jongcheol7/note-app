@@ -5,7 +5,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Image from "@tiptap/extension-image";
 import { useEffect } from "react";
 
-export default function Editor({ onEditorReady }) {
+export default function Editor({ onEditorReady, content }) {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -21,8 +21,11 @@ export default function Editor({ onEditorReady }) {
   useEffect(() => {
     if (editor && onEditorReady) {
       onEditorReady(editor);
+      if (content) {
+        editor.commands.setContent(content);
+      }
     }
-  }, [editor]);
+  }, [editor, content, onEditorReady]);
 
   if (!editor) return null;
 

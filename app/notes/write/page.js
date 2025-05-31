@@ -1,5 +1,5 @@
-import WritePage from "@app/notes/write/WritePage";
+import NoteDetail from "../components/NoteDetail";
 
 export default function NoteWrite() {
-  return <WritePage />;
+  return <NoteDetail />;
 }

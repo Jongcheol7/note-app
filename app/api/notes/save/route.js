@@ -6,7 +6,7 @@ import { authOptions } from "@app/api/auth/[...nextauth]/route";
 export async function POST(requset) {
   try {
     // 리엑트쿼리로 넘겨받은 데이터 가져오기
-    const { title, thumnail, categoryNo, sortOrder, content } =
+    const { noteNo, title, thumnail, categoryNo, sortOrder, content } =
       await requset.json();
     if (!content || content.trim().length === 0) {
       console.error("내용이 없습니다.");
@@ -21,6 +21,25 @@ export async function POST(requset) {
     }
     const userId = session.user.id;
 
+    console.log("noteNo 가 있다면 이건 merge 요.. ", noteNo);
+
+    // 수정일때 !!
+    if (noteNo) {
+      const updated = await prisma.note.update({
+        where: { noteNo },
+        data: {
+          user: { connect: { id: userId } },
+          title: title || "",
+          content,
+          thumnail: "",
+          category: { connect: { categoryNo: categoryNo } },
+          modDatetime: new Date(),
+        },
+      });
+      return new Response(JSON.stringify(updated), { status: 200 });
+    }
+
+    // 신규 추가일때 !!
     let sortOrderValue = 0;
     if (sortOrder === null) {
       // 정렬 순서가 없다면 DB에서 최대값을 가져온후 +1 해주자.
@@ -43,7 +62,7 @@ export async function POST(requset) {
         content: content,
         thumnail: "", // 썸네일은 지금은 빈 값
         categoryNo: categoryNo,
-        sortOrder: sortOrderValue,
+        sortOrder: sortOrder ?? sortOrderValue,
       },
     });
 

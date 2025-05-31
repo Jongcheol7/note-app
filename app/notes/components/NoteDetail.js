@@ -7,17 +7,19 @@ import { useEffect, useState } from "react";
 import CategoryPopup from "@app/notes/components/CategoryPopup";
 import { useCategoryLists } from "../hooks/useCategoryLists";
 
-export default function WritePage() {
+export default function NoteDetail({ initialData, refetchNote }) {
   const [editor, setEditor] = useState(null);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [title, setTitle] = useState(initialData?.title ?? "");
+  const [content, setContent] = useState(initialData?.content ?? "");
   const { mutate, isPending } = useNoteMutation();
   const router = useRouter();
   const [categories, setCategories] = useState([
     { id: -2, name: "➕ 추가" },
     { id: -1, name: "분류되지 않음" },
   ]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState(-1);
+  const [selectedCategoryNo, setSelectedCategoryNo] = useState(
+    initialData?.categoryNo ?? -1
+  );
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
 
   const { data: categoryData, refetch } = useCategoryLists();
@@ -55,17 +57,18 @@ export default function WritePage() {
           placeholder="제목을 입력하세요"
           className="bg-amber-100 text-xl font-semibold flex-1"
           onChange={(e) => setTitle(e.target.value)}
+          value={title}
         />
         <select
           className="mr-2 rounded px-2 py-1 bg-amber-100"
-          value={selectedCategoryId}
-          key={selectedCategoryId}
+          value={selectedCategoryNo}
+          key={selectedCategoryNo}
           onChange={(e) => {
             const selected = e.target.value;
             if (selected === "-2") {
               setShowCategoryPopup(true);
             } else {
-              setSelectedCategoryId(Number(selected));
+              setSelectedCategoryNo(Number(selected));
             }
           }}
         >
@@ -100,17 +103,18 @@ export default function WritePage() {
           onClick={() => {
             mutate(
               {
+                noteNo: initialData?.noteNo ?? null,
                 title,
                 thumnail: null,
-                categoryMo:
-                  selectedCategoryId === -1 ? null : selectedCategoryId,
-                sortOrder: 0,
+                categoryNo:
+                  selectedCategoryNo === -1 ? null : selectedCategoryNo,
+                sortOrder: initialData?.sortOrder ?? null,
                 content,
               },
               {
                 onSuccess: () => {
                   alert("✅ 저장 완료!");
-                  router.push("/");
+                  refetchNote();
                 },
               }
             );
@@ -124,7 +128,7 @@ export default function WritePage() {
         className="flex-1 overflow-y-auto"
         onClick={() => editor.chain().focus()}
       >
-        <Editor onEditorReady={setEditor} />
+        <Editor onEditorReady={setEditor} content={content} />
       </div>
       <NoteToolbar editor={editor} />
     </div>

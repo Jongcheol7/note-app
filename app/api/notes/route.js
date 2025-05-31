@@ -10,16 +10,24 @@ export async function GET() {
   }
   const userId = session.user.id;
 
-  //const notes = await selectNoteLists(userId); sqlite 버전
-  const notes = await prisma.note.findMany({
-    where: {
-      userId: userId,
-      delDatetime: null,
-    },
-    orderBy: {
-      sortOrder: "asc",
-    },
-  });
-
-  return Response.json(notes);
+  try {
+    const notes = await prisma.note.findMany({
+      where: {
+        userId: userId,
+        delDatetime: null,
+      },
+      orderBy: {
+        sortOrder: "asc",
+      },
+    });
+    return Response.json(notes);
+  } catch (err) {
+    return new Response(
+      JSON.stringify({ message: "노트 조회에 실패했습니다" }),
+      {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
 }

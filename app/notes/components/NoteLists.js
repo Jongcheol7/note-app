@@ -1,9 +1,11 @@
 "use client";
 import { useNoteLists } from "@app/notes/hooks/useNoteLists";
 import Link from "next/link";
+import NoteCard from "./NoteCard";
+import Masonry from "react-masonry-css";
 
 export default function NoteLists() {
-  const { data, isLoading, isError, error } = useNoteLists();
+  const { data, isLoading, isError, error, refetch } = useNoteLists();
   if (isLoading) return <p>메모를 불러오는 중입니다...</p>;
   if (isError)
     return (
@@ -17,18 +19,24 @@ export default function NoteLists() {
       </div>
     );
 
+  const breakpointColumnsObj = {
+    default: 3,
+    1024: 2,
+    640: 1,
+  };
+
   return (
     <div>
-      <div className="p-4 space-y-3">
+      <Masonry
+        breakpointCols={breakpointColumnsObj} // 👈 반응형 컬럼 설정 적용
+        className="flex gap-4" // Masonry 외부 스타일 (간격 등)
+        columnClassName="space-y-4" // Masonry 내부 컬럼 스타일 (카드 사이 간격)
+      >
         {data.map((note) => (
-          <div
-            key={note.noteNo}
-            className="p-4 bg-white rounded shadow border border-gray-100"
-          >
-            <h2 className="text-lg font-bold">{note.title}</h2>
-          </div>
+          // 📌 노트 하나하나를 카드 형태로 렌더링
+          <NoteCard key={note.noteNo} note={note} />
         ))}
-      </div>
+      </Masonry>
       <AddButton />
     </div>
   );
