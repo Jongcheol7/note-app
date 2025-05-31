@@ -87,8 +87,16 @@ export default function NoteToolbar({ editor }) {
 
     const reader = new FileReader();
     reader.onload = () => {
-      const imageUrl = reader.result;
-      editor.chain().focus().setImage({ src: imageUrl }).run();
+      const base64 = reader.result;
+
+      editor.commands.insertContent({
+        type: "resizableImage",
+        attrs: {
+          src: base64,
+          width: "300px", // 원하는 기본 사이즈
+          height: "auto",
+        },
+      });
     };
     reader.readAsDataURL(file);
   };

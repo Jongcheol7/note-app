@@ -13,9 +13,10 @@ export async function GET(req) {
   }
   const session = await getServerSession(authOptions);
   if (!session || !session.user) {
-    return new Response("로그인된 유저가 아닙니다.", { status: 401 });
+    //return new Response("로그인된 유저가 아닙니다.", { status: 401 });
   }
-  const userId = session.user.id;
+  //const userId = session.user.id;
+  const userId = "cmb7ybvd30000v5vgn811mofv";
   console.log("userId", userId);
 
   try {

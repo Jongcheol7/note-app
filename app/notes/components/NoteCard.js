@@ -16,11 +16,19 @@ export default function NoteCard({ note }) {
       }}
     >
       <div
-        className="prose prose-sm max-w-none line-clamp-6 mb-2"
+        className="prose prose-sm max-w-none overflow-hidden line-clamp-none relative"
+        style={{
+          display: "-webkit-box",
+          WebkitLineClamp: 10, // ✅ 원하는 줄 수로 제한
+          WebkitBoxOrient: "vertical",
+          overflow: "hidden",
+          maxHeight: "300px", // ✅ 최대 높이 제한
+        }}
         dangerouslySetInnerHTML={{ __html: safeHTML }}
       />
-      <div className="text-xs text-gray-500 text-right mt-2">
-        {formattedDate}
+      <div className="flex justify-between text-xs text-gray-500 text-right mt-2">
+        <span className="text-xs text-blue-600">...더보기</span>
+        <span>{formattedDate}</span>
       </div>
     </div>
   );
