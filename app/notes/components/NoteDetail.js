@@ -3,15 +3,18 @@ import Editor from "@app/notes/components/Editor";
 import NoteToolbar from "@app/notes/components/NoteToolbar";
 import { useNoteMutation } from "@app/notes/hooks/useNoteMutation";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CategoryPopup from "@app/notes/components/CategoryPopup";
 import { useCategoryLists } from "../hooks/useCategoryLists";
+import { useNoteDeleteMutation } from "../hooks/useNoteDeleteMutation";
 
 export default function NoteDetail({ initialData, refetchNote }) {
   const [editor, setEditor] = useState(null);
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [content, setContent] = useState(initialData?.content ?? "");
-  const { mutate, isPending } = useNoteMutation();
+  const { mutate: saveMutate, isPending: isSaving } = useNoteMutation();
+  const { mutate: deleteMutate, isPending: isDeleting } =
+    useNoteDeleteMutation();
   const router = useRouter();
   const [categories, setCategories] = useState([
     { id: -2, name: "➕ 추가" },
@@ -21,6 +24,8 @@ export default function NoteDetail({ initialData, refetchNote }) {
     initialData?.categoryNo ?? -1
   );
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
+  const buttonRef = useRef();
+  const [buttonAction, setButtonAction] = useState(false);
 
   const { data: categoryData, refetch } = useCategoryLists();
   // 카테고리 데이터를 가져오자
@@ -48,6 +53,19 @@ export default function NoteDetail({ initialData, refetchNote }) {
     editor.on("update", handleUpdate);
     return () => editor.off("update", handleUpdate);
   }, [editor]);
+
+  // 외부 클릭시 ... 토글 비활성화 하자.
+  useEffect(() => {
+    const hadleClickOutside = (e) => {
+      if (buttonRef.current && !buttonRef.current.contains(e.target)) {
+        setButtonAction(false);
+      }
+    };
+    document.addEventListener("mousedown", hadleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", hadleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="relative flex flex-col h-[calc(100vh-150px)]">
@@ -97,31 +115,63 @@ export default function NoteDetail({ initialData, refetchNote }) {
           </div>
         )}
 
-        <button
-          className="bg-green-400 rounded-md py-1 px-2 hover:bg-gray-500 duration-100"
-          disabled={isPending}
-          onClick={() => {
-            mutate(
-              {
-                noteNo: initialData?.noteNo ?? null,
-                title,
-                thumnail: null,
-                categoryNo:
-                  selectedCategoryNo === -1 ? null : selectedCategoryNo,
-                sortOrder: initialData?.sortOrder ?? null,
-                content,
-              },
-              {
-                onSuccess: () => {
-                  alert("✅ 저장 완료!");
-                  refetchNote();
-                },
-              }
-            );
-          }}
-        >
-          {isPending ? "저장중" : "저장"}
+        <button onClick={() => setButtonAction((prev) => !prev)}>
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M6 10a2 2 0 114.001-.001A2 2 0 016 10zm4 0a2 2 0 114.001-.001A2 2 0 0110 10zm4 0a2 2 0 114.001-.001A2 2 0 0114 10z" />
+          </svg>
         </button>
+        {buttonAction && (
+          <div
+            className="absolute right-0 top-4 mt-2 w-24 bg-white dark:bg-gray-700 border border-gray-200 rounded-xl shadow-lg z-20 text-sm"
+            ref={buttonRef}
+          >
+            <button
+              className="block w-full text-left px-4 py-1 hover:bg-gray-100 dark:hover:bg-gray-600"
+              disabled={isSaving}
+              onClick={() => {
+                saveMutate(
+                  {
+                    noteNo: initialData?.noteNo ?? null,
+                    title,
+                    thumnail: null,
+                    categoryNo:
+                      selectedCategoryNo === -1 ? null : selectedCategoryNo,
+                    sortOrder: initialData?.sortOrder ?? null,
+                    content,
+                  },
+                  {
+                    onSuccess: () => {
+                      alert("✅ 저장 완료!");
+                      refetchNote();
+                    },
+                  }
+                );
+              }}
+            >
+              {isSaving ? "저장중" : "저장"}
+            </button>
+            <button
+              className="block w-full text-left px-4 py-1 hover:bg-gray-100 dark:hover:bg-gray-600 text-red-500"
+              disabled={isDeleting}
+              onClick={() => {
+                deleteMutate(
+                  {
+                    noteNo: initialData?.noteNo ?? null,
+                  },
+                  {
+                    onSuccess: () => {
+                      alert("삭제 완료!");
+                      refetchNote();
+                      router.push("/");
+                    },
+                  }
+                );
+              }}
+            >
+              {isDeleting ? "삭제중" : "삭제"}
+            </button>
+          </div>
+        )}
       </div>
 
       <div

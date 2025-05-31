@@ -21,8 +21,6 @@ export async function POST(requset) {
     }
     const userId = session.user.id;
 
-    console.log("noteNo 가 있다면 이건 merge 요.. ", noteNo);
-
     // 수정일때 !!
     if (noteNo) {
       const updated = await prisma.note.update({
