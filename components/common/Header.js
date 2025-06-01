@@ -8,8 +8,6 @@ import Image from "next/image";
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: session, status } = useSession();
-  console.log("헤더 레이아웃 session : ", session);
-  console.log("헤더 레이아웃 status : ", status);
 
   return (
     <>
