@@ -6,8 +6,15 @@ import { authOptions } from "@app/api/auth/[...nextauth]/route";
 export async function POST(requset) {
   try {
     // 리엑트쿼리로 넘겨받은 데이터 가져오기
-    const { noteNo, title, thumnail, categoryNo, sortOrder, content } =
-      await requset.json();
+    const {
+      noteNo,
+      title,
+      thumnail,
+      categoryNo,
+      sortOrder,
+      content,
+      plainText,
+    } = await requset.json();
     if (!content || content.trim().length === 0) {
       console.error("내용이 없습니다.");
       return new Response("내용이 없습니다.", { status: 401 });
@@ -29,6 +36,7 @@ export async function POST(requset) {
           user: { connect: { id: userId } },
           title: title || "",
           content,
+          plainText,
           thumnail: "",
           category: { connect: { categoryNo: categoryNo } },
           modDatetime: new Date(),
@@ -55,11 +63,12 @@ export async function POST(requset) {
 
     const newNote = await prisma.note.create({
       data: {
-        userId: userId,
+        userId,
         title: title || "", // 제목 없을 수도 있으니 기본값 빈 문자열
-        content: content,
+        content,
+        plainText,
         thumnail: "", // 썸네일은 지금은 빈 값
-        categoryNo: categoryNo,
+        categoryNo,
         sortOrder: sortOrder ?? sortOrderValue,
       },
     });

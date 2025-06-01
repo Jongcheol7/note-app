@@ -9,12 +9,13 @@ import { useCategoryLists } from "../hooks/useCategoryLists";
 import { useNoteDeleteMutation } from "../hooks/useNoteDeleteMutation";
 import { useTrashRecovery } from "../hooks/useTrashRecovery";
 import { useTrashDelete } from "../hooks/useTrashDeleteMutation";
+import { useSearchStore } from "@/store/SearchStore";
+import { HtmlToPlainText } from "@/components/common/htmlToPlainText";
 
 export default function NoteDetail({ initialData, refetchNote }) {
   console.log("이니셜데이터 : ", initialData);
   const [editor, setEditor] = useState(null);
   const [title, setTitle] = useState(initialData?.title ?? "");
-  const [content, setContent] = useState(initialData?.content ?? "");
   const { mutate: saveMutate, isPending: isSaving } = useNoteMutation();
   const { mutate: deleteMutate, isPending: isDeleting } =
     useNoteDeleteMutation();
@@ -32,8 +33,8 @@ export default function NoteDetail({ initialData, refetchNote }) {
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
   const buttonRef = useRef();
   const [buttonAction, setButtonAction] = useState(false);
-
   const { data: categoryData, refetch } = useCategoryLists();
+
   // 카테고리 데이터를 가져오자
   useEffect(() => {
     if (categoryData) {
@@ -48,17 +49,6 @@ export default function NoteDetail({ initialData, refetchNote }) {
       setCategories(converted);
     }
   }, [categoryData]);
-
-  // editor가 업데이트 될때마다 내용 추출해서 저장하자
-  useEffect(() => {
-    if (!editor) return;
-    const handleUpdate = () => {
-      const html = editor.getHTML();
-      setContent(html);
-    };
-    editor.on("update", handleUpdate);
-    return () => editor.off("update", handleUpdate);
-  }, [editor]);
 
   // 외부 클릭시 ... 토글 비활성화 하자.
   useEffect(() => {
@@ -126,7 +116,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
             <path d="M6 10a2 2 0 114.001-.001A2 2 0 016 10zm4 0a2 2 0 114.001-.001A2 2 0 0110 10zm4 0a2 2 0 114.001-.001A2 2 0 0114 10z" />
           </svg>
         </button>
-        {buttonAction && !initialData.delDatetime && (
+        {buttonAction && !initialData?.delDatetime && (
           <div
             className="absolute right-0 top-5 mt-2 w-24 bg-white dark:bg-gray-700 border border-gray-200 rounded-xl shadow-lg z-20 text-sm"
             ref={buttonRef}
@@ -137,19 +127,20 @@ export default function NoteDetail({ initialData, refetchNote }) {
               onClick={() => {
                 saveMutate(
                   {
-                    noteNo: initialData.noteNo,
+                    noteNo: initialData?.noteNo,
                     title,
                     thumnail: null,
                     categoryNo:
                       selectedCategoryNo === -1 ? null : selectedCategoryNo,
                     sortOrder: initialData?.sortOrder ?? null,
-                    content,
+                    content: editor.getHTML(),
+                    plainText: HtmlToPlainText(editor.getHTML()),
                   },
                   {
                     onSuccess: () => {
                       alert("✅ 저장 완료!");
                       refetchNote();
-                      setButtonAction(false);
+                      router.push("/");
                     },
                   }
                 );
@@ -163,7 +154,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
               onClick={() => {
                 deleteMutate(
                   {
-                    noteNo: initialData.noteNo,
+                    noteNo: initialData?.noteNo,
                   },
                   {
                     onSuccess: () => {
@@ -179,7 +170,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
             </button>
           </div>
         )}
-        {buttonAction && initialData.delDatetime && (
+        {buttonAction && initialData?.delDatetime && (
           <div className="absolute right-0 top-5 mt-2  w-24 bg-white dark:bg-gray-700 border border-gray-200 rounded-xl shadow-lg z-20 text-sm">
             <button
               className="block w-full text-left px-4 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
@@ -223,7 +214,10 @@ export default function NoteDetail({ initialData, refetchNote }) {
         className="flex-1 overflow-y-auto"
         onClick={() => editor.chain().focus()}
       >
-        <Editor onEditorReady={setEditor} content={content} />
+        <Editor
+          onEditorReady={setEditor}
+          content={initialData?.content ?? ""}
+        />
       </div>
       <NoteToolbar editor={editor} />
     </div>

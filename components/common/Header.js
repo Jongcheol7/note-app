@@ -4,10 +4,12 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { useState } from "react";
 import { Home, LogIn, LogOut } from "lucide-react";
 import Image from "next/image";
+import { useSearchStore } from "@/store/SearchStore";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: session, status } = useSession();
+  const { keyword, setKeyword } = useSearchStore();
 
   return (
     <>
@@ -23,6 +25,7 @@ export default function Header() {
           className="flex-1 h-9 px-2 pl-3 py-1 border border-gray-300 rounded-2xl focus:outline-none focus:ring-1 focus:ring-blue-400 transition"
           type="text"
           placeholder="🔍 메모 검색"
+          onChange={(e) => setKeyword(e.target.value)}
         />
         <Link href={"/"}>
           <Home className="text-2xl font-medium text-gray-900 hover:text-red-800 transition-all duration-200">

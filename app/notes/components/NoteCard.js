@@ -6,12 +6,10 @@ export default function NoteCard({ note }) {
   const safeHTML = DOMPurify.sanitize(note.content);
   const formattedDate = new Date(note.inputDatetime).toLocaleDateString();
   const router = useRouter();
-  console.log("note: ", note);
   return (
     <div
       className="bg-red-200 p-4 rounded-xl shadow-md hover:shadow-lg transition-all break-words"
       onClick={() => {
-        console.log("note.noteNo: ", note.noteNo);
         router.push(`/notes/${note.noteNo}`);
       }}
     >
