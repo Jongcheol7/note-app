@@ -8,9 +8,12 @@ export default function NoteCard({ note }) {
   const router = useRouter();
   return (
     <div
-      className="bg-red-200 p-4 rounded-xl shadow-md hover:shadow-lg transition-all break-words"
+      className="p-4 rounded-xl shadow-md hover:shadow-lg transition-all break-words"
       onClick={() => {
         router.push(`/notes/${note.noteNo}`);
+      }}
+      style={{
+        backgroundColor: note.color ?? "#fef3c7", // note.color 값 사용, 없으면 기본 색
       }}
     >
       <div

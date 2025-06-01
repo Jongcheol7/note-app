@@ -9,8 +9,8 @@ import { useCategoryLists } from "../hooks/useCategoryLists";
 import { useNoteDeleteMutation } from "../hooks/useNoteDeleteMutation";
 import { useTrashRecovery } from "../hooks/useTrashRecovery";
 import { useTrashDelete } from "../hooks/useTrashDeleteMutation";
-import { useSearchStore } from "@/store/SearchStore";
-import { HtmlToPlainText } from "@/components/common/htmlToPlainText";
+import { HtmlToPlainText } from "@/components/common/HtmlToPlainText";
+import ColorPopup from "./ColorPopoup";
 
 export default function NoteDetail({ initialData, refetchNote }) {
   console.log("이니셜데이터 : ", initialData);
@@ -31,6 +31,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
     initialData?.categoryNo ?? -1
   );
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
+  const [showColorPopup, setShowColorPopup] = useState(false);
   const buttonRef = useRef();
   const [buttonAction, setButtonAction] = useState(false);
   const { data: categoryData, refetch } = useCategoryLists();
@@ -64,7 +65,12 @@ export default function NoteDetail({ initialData, refetchNote }) {
   }, []);
 
   return (
-    <div className="relative flex flex-col h-[calc(100vh-150px)]">
+    <div
+      className="relative flex flex-col h-[calc(100vh-150px)]"
+      style={{
+        backgroundColor: initialData?.color ?? "#fef3c7", // note.color 값 사용, 없으면 기본 색
+      }}
+    >
       <div className="flex">
         <input
           type="text"
@@ -72,9 +78,15 @@ export default function NoteDetail({ initialData, refetchNote }) {
           className="bg-amber-100 text-xl font-semibold flex-1"
           onChange={(e) => setTitle(e.target.value)}
           value={title}
+          style={{
+            backgroundColor: initialData?.color ?? "#fef3c7", // note.color 값 사용, 없으면 기본 색
+          }}
         />
         <select
           className="mr-2 rounded px-2 py-1 bg-amber-100"
+          style={{
+            backgroundColor: initialData?.color ?? "#fef3c7", // note.color 값 사용, 없으면 기본 색
+          }}
           value={selectedCategoryNo}
           key={selectedCategoryNo}
           onChange={(e) => {
@@ -94,22 +106,19 @@ export default function NoteDetail({ initialData, refetchNote }) {
           ))}
         </select>
 
-        {showCategoryPopup && (
-          <div>
-            <CategoryPopup
-              onCancel={(data) => {
-                if (data) {
-                  refetch();
-                }
-                return setShowCategoryPopup(false);
-              }}
-            />
-            <div
-              className="fixed inset-0 bg-black bg-opacity-40 z-20"
-              onClick={() => setShowCategoryPopup(false)}
-            />
-          </div>
-        )}
+        {/* 카테고리 팝업 */}
+        <CategoryPopup
+          setShow={setShowCategoryPopup}
+          show={showCategoryPopup}
+          refetch={refetch}
+        />
+        {/* 컬러 팝업 */}
+        <ColorPopup
+          setShow={setShowColorPopup}
+          show={showColorPopup}
+          refetch={refetchNote}
+          noteNo={initialData?.noteNo}
+        />
 
         <button onClick={() => setButtonAction((prev) => !prev)}>
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -121,6 +130,14 @@ export default function NoteDetail({ initialData, refetchNote }) {
             className="absolute right-0 top-5 mt-2 w-24 bg-white dark:bg-gray-700 border border-gray-200 rounded-xl shadow-lg z-20 text-sm"
             ref={buttonRef}
           >
+            <button
+              onClick={() => {
+                setShowColorPopup((prev) => !prev);
+                setButtonAction((prev) => !prev);
+              }}
+            >
+              색상
+            </button>
             <button
               className="block w-full text-left px-4 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
               disabled={isSaving}

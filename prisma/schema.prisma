@@ -78,6 +78,7 @@ model Note {
   thumnail      String?
   categoryNo    Int?
   sortOrder     Int       @default(0)
+  color         String?
   inputDatetime DateTime  @default(now())
   modDatetime   DateTime?
   delDatetime   DateTime?
