@@ -6,8 +6,8 @@ export function useNoteDetail(no) {
     queryKey: ["noteDetail", no],
     queryFn: async () => {
       try {
-        const res = await axios.get(`/api/notes/${no}`).then((res) => res.data);
-        return res;
+        const res = await axios.get(`/api/notes/${no}`);
+        return res.data;
       } catch (err) {
         const message = err.response?.data ?? err.message;
         throw new Error(message);

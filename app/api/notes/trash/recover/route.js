@@ -1,10 +1,11 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
 
-export async function DELETE(request) {
+export async function POST(request) {
   const req = await request.json();
-  const noteNo = req.noteNo;
+  const noteNo = Number(req.noteNo.noteNo);
+  console.log("복원 api 진입 ", req);
   if (!noteNo) {
     console.error("노트 번호가 없습니다.");
     return new Response("노트 번호가 없습니다.", { status: 400 });
@@ -33,12 +34,12 @@ export async function DELETE(request) {
     const deleted = await prisma.note.update({
       where: { noteNo },
       data: {
-        delDatetime: new Date(),
+        delDatetime: null,
       },
     });
     return new Response(JSON.stringify(deleted), { status: 200 });
   } catch (err) {
-    console.error("메모 삭제에 실패했습니다. : ", err);
-    return new Response("메모 삭제에 실패했습니다.", { status: 500 });
+    console.error("메모 복원에 실패했습니다. : ", err);
+    return new Response("메모 복원에 실패했습니다.", { status: 500 });
   }
 }

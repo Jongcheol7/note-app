@@ -7,14 +7,20 @@ import { useEffect, useRef, useState } from "react";
 import CategoryPopup from "@app/notes/components/CategoryPopup";
 import { useCategoryLists } from "../hooks/useCategoryLists";
 import { useNoteDeleteMutation } from "../hooks/useNoteDeleteMutation";
+import { useTrashRecovery } from "../hooks/useTrashRecovery";
+import { useTrashDelete } from "../hooks/useTrashDeleteMutation";
 
 export default function NoteDetail({ initialData, refetchNote }) {
+  console.log("이니셜데이터 : ", initialData);
   const [editor, setEditor] = useState(null);
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [content, setContent] = useState(initialData?.content ?? "");
   const { mutate: saveMutate, isPending: isSaving } = useNoteMutation();
   const { mutate: deleteMutate, isPending: isDeleting } =
     useNoteDeleteMutation();
+  const { mutate: revocerMutate, isPending: isRecovering } = useTrashRecovery();
+  const { mutate: trashDeleteMutate, isPending: isTrashDeleting } =
+    useTrashDelete();
   const router = useRouter();
   const [categories, setCategories] = useState([
     { id: -2, name: "➕ 추가" },
@@ -120,18 +126,18 @@ export default function NoteDetail({ initialData, refetchNote }) {
             <path d="M6 10a2 2 0 114.001-.001A2 2 0 016 10zm4 0a2 2 0 114.001-.001A2 2 0 0110 10zm4 0a2 2 0 114.001-.001A2 2 0 0114 10z" />
           </svg>
         </button>
-        {buttonAction && (
+        {buttonAction && !initialData.delDatetime && (
           <div
-            className="absolute right-0 top-4 mt-2 w-24 bg-white dark:bg-gray-700 border border-gray-200 rounded-xl shadow-lg z-20 text-sm"
+            className="absolute right-0 top-5 mt-2 w-24 bg-white dark:bg-gray-700 border border-gray-200 rounded-xl shadow-lg z-20 text-sm"
             ref={buttonRef}
           >
             <button
-              className="block w-full text-left px-4 py-1 hover:bg-gray-100 dark:hover:bg-gray-600"
+              className="block w-full text-left px-4 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
               disabled={isSaving}
               onClick={() => {
                 saveMutate(
                   {
-                    noteNo: initialData?.noteNo ?? null,
+                    noteNo: initialData.noteNo,
                     title,
                     thumnail: null,
                     categoryNo:
@@ -143,6 +149,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
                     onSuccess: () => {
                       alert("✅ 저장 완료!");
                       refetchNote();
+                      setButtonAction(false);
                     },
                   }
                 );
@@ -151,12 +158,12 @@ export default function NoteDetail({ initialData, refetchNote }) {
               {isSaving ? "저장중" : "저장"}
             </button>
             <button
-              className="block w-full text-left px-4 py-1 hover:bg-gray-100 dark:hover:bg-gray-600 text-red-500"
+              className="block w-full text-left px-4 py-1 hover:bg-gray-300 dark:hover:bg-gray-600 text-red-500"
               disabled={isDeleting}
               onClick={() => {
                 deleteMutate(
                   {
-                    noteNo: initialData?.noteNo ?? null,
+                    noteNo: initialData.noteNo,
                   },
                   {
                     onSuccess: () => {
@@ -169,6 +176,44 @@ export default function NoteDetail({ initialData, refetchNote }) {
               }}
             >
               {isDeleting ? "삭제중" : "삭제"}
+            </button>
+          </div>
+        )}
+        {buttonAction && initialData.delDatetime && (
+          <div className="absolute right-0 top-5 mt-2  w-24 bg-white dark:bg-gray-700 border border-gray-200 rounded-xl shadow-lg z-20 text-sm">
+            <button
+              className="block w-full text-left px-4 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
+              disabled={isRecovering}
+              onClick={() => {
+                revocerMutate(
+                  { noteNo: initialData.noteNo },
+                  {
+                    onSuccess: () => {
+                      alert("복원 완료!");
+                      router.push("/notes/trash");
+                    },
+                  }
+                );
+              }}
+            >
+              복원
+            </button>
+            <button
+              className="block w-full text-left px-4 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
+              disabled={isTrashDeleting}
+              onClick={() => {
+                trashDeleteMutate(
+                  { noteNo: initialData.noteNo },
+                  {
+                    onSuccess: () => {
+                      alert("영구 삭제 완료!");
+                      router.push("/notes/trash");
+                    },
+                  }
+                );
+              }}
+            >
+              영구삭제
             </button>
           </div>
         )}

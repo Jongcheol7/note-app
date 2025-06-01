@@ -70,7 +70,7 @@ export default function Header() {
               </div>
             )}
             <Link
-              href={"/"}
+              href={"/notes/trash"}
               onClick={() => setIsMenuOpen(false)}
               className="w-fit hover:text-blue-800 transition duration-300"
             >

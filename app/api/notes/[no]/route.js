@@ -23,12 +23,11 @@ export async function GET(req) {
       where: {
         userId,
         noteNo,
-        delDatetime: null,
       },
     });
 
     // 유저가 다르면 접근 차단
-    if (!note || note.userId !== userId || note.delDatetime) {
+    if (!note || note.userId !== userId) {
       return new Response(
         JSON.stringify({ message: "노트를 찾을 수 없습니다." }),
         {

@@ -5,7 +5,7 @@ import NoteCard from "./NoteCard";
 import Masonry from "react-masonry-css";
 
 export default function NoteLists() {
-  const { data, isLoading, isError, error, refetch } = useNoteLists();
+  const { data, isLoading, isError, error } = useNoteLists();
   if (isLoading) return <p>메모를 불러오는 중입니다...</p>;
   if (isError)
     return (
