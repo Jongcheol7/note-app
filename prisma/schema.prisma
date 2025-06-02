@@ -79,6 +79,7 @@ model Note {
   categoryNo    Int?
   sortOrder     Int       @default(0)
   color         String?
+  isPublic      Boolean   @default(false)
   inputDatetime DateTime  @default(now())
   modDatetime   DateTime?
   delDatetime   DateTime?

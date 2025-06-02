@@ -12,30 +12,43 @@ import { useTrashDelete } from "../hooks/useTrashDeleteMutation";
 import { HtmlToPlainText } from "@/components/common/HtmlToPlainText";
 import ColorPopup from "./ColorPopoup";
 import { ColorStore } from "@/store/ColorStore";
+import { usePublicMutation } from "../hooks/usePublicMutation";
 
 export default function NoteDetail({ initialData, refetchNote }) {
   console.log("이니셜데이터 : ", initialData);
+
+  // useState
   const [editor, setEditor] = useState(null);
   const [title, setTitle] = useState(initialData?.title ?? "");
+  const [selectedCategoryNo, setSelectedCategoryNo] = useState(
+    initialData?.categoryNo ?? -1
+  );
+  const [showCategoryPopup, setShowCategoryPopup] = useState(false);
+  const [showColorPopup, setShowColorPopup] = useState(false);
+  const [categories, setCategories] = useState([
+    { id: -2, name: "➕ 추가" },
+    { id: -1, name: "분류되지 않음" },
+  ]);
+  const [buttonAction, setButtonAction] = useState(false);
+  const [isPublic, setIsPublic] = useState(initialData?.isPublic ?? false);
+
+  // Router
+  const router = useRouter();
+
+  // useRef
+  const buttonRef = useRef();
+
+  // React Query
   const { mutate: saveMutate, isPending: isSaving } = useNoteMutation();
   const { mutate: deleteMutate, isPending: isDeleting } =
     useNoteDeleteMutation();
   const { mutate: revocerMutate, isPending: isRecovering } = useTrashRecovery();
   const { mutate: trashDeleteMutate, isPending: isTrashDeleting } =
     useTrashDelete();
-  const router = useRouter();
-  const [categories, setCategories] = useState([
-    { id: -2, name: "➕ 추가" },
-    { id: -1, name: "분류되지 않음" },
-  ]);
-  const [selectedCategoryNo, setSelectedCategoryNo] = useState(
-    initialData?.categoryNo ?? -1
-  );
-  const [showCategoryPopup, setShowCategoryPopup] = useState(false);
-  const [showColorPopup, setShowColorPopup] = useState(false);
-  const buttonRef = useRef();
-  const [buttonAction, setButtonAction] = useState(false);
   const { data: categoryData, refetch } = useCategoryLists();
+  const { mutate: publicMutate, isPending: isPublicing } = usePublicMutation();
+
+  // Zustand
   const { color, setColor } = ColorStore();
 
   useEffect(() => {
@@ -136,65 +149,92 @@ export default function NoteDetail({ initialData, refetchNote }) {
 
         {buttonAction && !initialData?.delDatetime && (
           <div
-            className="absolute right-0 top-8 mt-2 w-24 bg-white dark:bg-gray-700 border border-gray-200 rounded-xl shadow-lg z-20 text-sm"
+            className="absolute right-0 top-5 w-26 py-1 pt-2 bg-gray-200 dark:bg-gray-700  rounded-xl shadow-lg z-20 text-sm"
             ref={buttonRef}
           >
-            <button
-              className="block w-full text-left px-4 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
-              onClick={() => {
-                setShowColorPopup((prev) => !prev);
-                setButtonAction((prev) => !prev);
-              }}
-            >
-              색상
-            </button>
-            <button
-              className="block w-full text-left px-4 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
-              disabled={isSaving}
-              onClick={() => {
-                saveMutate(
-                  {
+            <div className="flex items-center px-4 py-1">
+              <span>배경색</span>
+              <button
+                className="w-5 h-5 ml-2 rounded-full"
+                style={{
+                  background: "conic-gradient(red, yellow, green, violet)",
+                }}
+                onClick={() => {
+                  setShowColorPopup((prev) => !prev);
+                  setButtonAction((prev) => !prev);
+                }}
+              />
+            </div>
+            <div className="flex items-center px-4 py-1">
+              <span>{isPublic ? "공개" : "비공개"}</span>
+              <button
+                className={`relative ml-2 inline-flex items-center h-5 w-10 rounded-full transition-colors duration-300 ${
+                  isPublic ? "bg-green-400" : "bg-gray-500"
+                }`}
+                onClick={() => {
+                  publicMutate({
+                    isPublic: !isPublic,
                     noteNo: initialData?.noteNo,
-                    title,
-                    thumnail: null,
-                    categoryNo:
-                      selectedCategoryNo === -1 ? null : selectedCategoryNo,
-                    sortOrder: initialData?.sortOrder ?? null,
-                    content: editor.getHTML(),
-                    plainText: HtmlToPlainText(editor.getHTML()),
-                  },
-                  {
-                    onSuccess: () => {
-                      alert("✅ 저장 완료!");
-                      refetchNote();
-                      router.push("/");
+                  });
+                  setIsPublic((prev) => !prev);
+                }}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform bg-white rounded-full ${
+                    isPublic ? "translate-x-5" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </div>
+            <div className="flex justify-between px-4 py-1">
+              <button
+                className="hover:font-bold"
+                disabled={isSaving}
+                onClick={() => {
+                  saveMutate(
+                    {
+                      noteNo: initialData?.noteNo,
+                      title,
+                      thumnail: null,
+                      categoryNo:
+                        selectedCategoryNo === -1 ? null : selectedCategoryNo,
+                      sortOrder: initialData?.sortOrder ?? null,
+                      content: editor.getHTML(),
+                      plainText: HtmlToPlainText(editor.getHTML()),
                     },
-                  }
-                );
-              }}
-            >
-              {isSaving ? "저장중" : "저장"}
-            </button>
-            <button
-              className="block w-full text-left px-4 py-1 hover:bg-gray-300 dark:hover:bg-gray-600 text-red-500"
-              disabled={isDeleting}
-              onClick={() => {
-                deleteMutate(
-                  {
-                    noteNo: initialData?.noteNo,
-                  },
-                  {
-                    onSuccess: () => {
-                      alert("삭제 완료!");
-                      refetchNote();
-                      router.push("/");
+                    {
+                      onSuccess: () => {
+                        alert("✅ 저장 완료!");
+                        refetchNote();
+                        router.push("/");
+                      },
+                    }
+                  );
+                }}
+              >
+                {isSaving ? "저장중" : "저장"}
+              </button>
+              <button
+                className="hover:font-bold text-red-500"
+                disabled={isDeleting}
+                onClick={() => {
+                  deleteMutate(
+                    {
+                      noteNo: initialData?.noteNo,
                     },
-                  }
-                );
-              }}
-            >
-              {isDeleting ? "삭제중" : "삭제"}
-            </button>
+                    {
+                      onSuccess: () => {
+                        alert("삭제 완료!");
+                        refetchNote();
+                        router.push("/");
+                      },
+                    }
+                  );
+                }}
+              >
+                {isDeleting ? "삭제중" : "삭제"}
+              </button>
+            </div>
           </div>
         )}
         {buttonAction && initialData?.delDatetime && (

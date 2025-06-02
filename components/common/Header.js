@@ -2,7 +2,15 @@
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useState } from "react";
-import { Home, LogIn, LogOut } from "lucide-react";
+import {
+  Home,
+  LogIn,
+  LogOut,
+  MessageSquare,
+  Trash2,
+  Bell,
+  Lock,
+} from "lucide-react";
 import Image from "next/image";
 import { useSearchStore } from "@/store/SearchStore";
 
@@ -57,7 +65,7 @@ export default function Header() {
           </button>
         </div>
         <nav className="flex flex-col px-3 h-[calc(100%-64px)] justify-between">
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             {session?.user.image && (
               <div className="flex  items-center gap-3 mb-5">
                 <Image
@@ -75,23 +83,30 @@ export default function Header() {
             <Link
               href={"/notes/trash"}
               onClick={() => setIsMenuOpen(false)}
-              className="w-fit hover:text-blue-800 transition duration-300"
+              className="flex gap-1 w-fit hover:text-blue-800 transition duration-300"
             >
-              🗑 휴지통
+              <Trash2 />
+              <span>휴지통</span>
             </Link>
             <Link
               href={"/"}
               onClick={() => setIsMenuOpen(false)}
-              className="w-fit hover:text-blue-800 transition duration-300"
+              className="flex gap-1 w-fit hover:text-blue-800 transition duration-300"
             >
-              🔔 알림
+              <Bell />
+              <span>알림</span>
             </Link>
             <Link
               href={"/"}
               onClick={() => setIsMenuOpen(false)}
-              className="w-fit hover:text-blue-800 transition duration-300"
+              className="flex gap-1 w-fit hover:text-blue-800 transition duration-300"
             >
-              🔒 비밀노트
+              <Lock />
+              <span>비밀노트</span>
+            </Link>
+            <Link href={"/"} className="flex gap-1">
+              <MessageSquare />
+              <span>커뮤니티</span>
             </Link>
           </div>
 
