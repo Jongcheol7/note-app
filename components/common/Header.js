@@ -104,7 +104,7 @@ export default function Header() {
               <Lock />
               <span>비밀노트</span>
             </Link>
-            <Link href={"/"} className="flex gap-1">
+            <Link href={"/community"} className="flex gap-1">
               <MessageSquare />
               <span>커뮤니티</span>
             </Link>
