@@ -11,17 +11,14 @@ import {
   Check,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import useVolumeAnalyser from "@/components/common/RecordAnalyseVolume";
 
 export default function NoteToolbar({ editor }) {
   const fileInputRef = useRef(null);
-  const [isRecordClick, setIsRecordClick] = useState(false);
-  const [recording, setRecording] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
+  const [isRecordClick, setIsRecordClick] = useState(false); //녹음 창 올릴지 정하기
+  const [recording, setRecording] = useState(false); //녹음 시작버튼을 눌렀는지지
+  const [isPaused, setIsPaused] = useState(false); //일시시정지 버튼을 눌렀는지
   const [recordTime, setRecordTime] = useState(0);
   const intervalRef = useRef(null);
-  const { volumeHistory, startAnalyzingVolume, stopAnalyzingVolume } =
-    useVolumeAnalyser();
   const recorderRef = useRef(null);
 
   // 녹음 시작시 감지해서 실행됨
@@ -41,13 +38,13 @@ export default function NoteToolbar({ editor }) {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     recorderRef.current = new MediaRecorder(stream);
     recorderRef.current.start();
-    startAnalyzingVolume(stream);
     setRecording(true);
   };
 
   const stopRecording = () => {
+    const tracks = recorderRef.current?.stream?.getTracks?.();
+    tracks?.forEach((track) => track.stop()); // 마이크 해제
     recorderRef.current?.stop();
-    stopAnalyzingVolume();
     setRecording(false);
     setIsPaused(false);
     setRecordTime(0); // 필요시 초기화
@@ -62,6 +59,7 @@ export default function NoteToolbar({ editor }) {
     return `${mins}:${secs}`;
   };
 
+  // 녹음 파일 메서드
   const handleRecordClick = () => {
     if (!recorderRef.current) return;
 
@@ -112,18 +110,7 @@ export default function NoteToolbar({ editor }) {
         `}
       >
         <span className="w-full text-center">{formatTime(recordTime)}</span>
-        <div className="w-full flex items-end h-8 overflow-hidden gap-[1px]">
-          {volumeHistory.map((val, idx) => (
-            <div
-              key={idx}
-              className="flex-1 bg-gray-400 rounded min-w-[1px]"
-              style={{
-                height: `${(val / 255) * 100 * 3}%`,
-                transition: "height 0.1s linear",
-              }}
-            />
-          ))}
-        </div>
+
         <div className="flex justify-between px-36">
           <button
             onClick={() => setIsRecordClick(false)}
@@ -138,11 +125,9 @@ export default function NoteToolbar({ editor }) {
                 startRecording();
               } else if (!isPaused) {
                 recorderRef.current?.pause();
-                stopAnalyzingVolume();
                 setIsPaused(true);
               } else {
                 recorderRef.current?.resume();
-                startAnalyzingVolume(recorderRef.current.stream); // resume 시 다시 분석 시작
                 setIsPaused(false);
               }
             }}

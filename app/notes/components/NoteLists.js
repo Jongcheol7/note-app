@@ -56,8 +56,8 @@ export default function NoteLists() {
 
   const breakpointColumnsObj = {
     default: 3,
-    1024: 2,
-    640: 1,
+    1024: 3,
+    640: 2,
   };
 
   return (
