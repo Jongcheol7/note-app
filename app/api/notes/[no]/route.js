@@ -16,7 +16,6 @@ export async function GET(req) {
     return new Response("로그인된 유저가 아닙니다.", { status: 401 });
   }
   const userId = session.user.id;
-  console.log("userId", userId);
 
   try {
     const note = await prisma.note.findFirst({

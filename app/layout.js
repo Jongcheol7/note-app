@@ -1,9 +1,12 @@
+"use client";
+import { ColorStore } from "@/store/ColorStore";
 import "./globals.css";
 import Header from "@components/common/Header";
 import ReactQueryProvider from "@components/common/ReactQueryProvider";
 import SessionWrapper from "@components/common/SessionProvider";
 
-export default async function RootLayout({ children }) {
+export default function RootLayout({ children }) {
+  const { color } = ColorStore();
   return (
     <html lang="en">
       <head>
@@ -11,7 +14,12 @@ export default async function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Note App</title>
       </head>
-      <body className="relative flex flex-col mx-auto sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl px-4 sm:px-6 md:px-8 py-4 bg-amber-100">
+      <body
+        className="relative flex flex-col mx-auto sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl px-4 sm:px-6 md:px-8 py-4"
+        style={{
+          backgroundColor: color, // note.color 값 사용, 없으면 기본 색
+        }}
+      >
         <SessionWrapper>
           <ReactQueryProvider>
             <Header />

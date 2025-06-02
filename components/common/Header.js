@@ -13,7 +13,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="flex justify-between py-3 gap-2 items-center mb-7">
+      <header className="flex justify-between py-3 gap-2 items-center mb-3">
         <button
           className="text-2xl font-bold text-gray-900 hover:text-blue-800 transition-all duration-200"
           aria-label="메뉴 열기"

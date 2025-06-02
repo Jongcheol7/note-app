@@ -11,6 +11,7 @@ import { useTrashRecovery } from "../hooks/useTrashRecovery";
 import { useTrashDelete } from "../hooks/useTrashDeleteMutation";
 import { HtmlToPlainText } from "@/components/common/HtmlToPlainText";
 import ColorPopup from "./ColorPopoup";
+import { ColorStore } from "@/store/ColorStore";
 
 export default function NoteDetail({ initialData, refetchNote }) {
   console.log("이니셜데이터 : ", initialData);
@@ -35,6 +36,14 @@ export default function NoteDetail({ initialData, refetchNote }) {
   const buttonRef = useRef();
   const [buttonAction, setButtonAction] = useState(false);
   const { data: categoryData, refetch } = useCategoryLists();
+  const { color, setColor } = ColorStore();
+
+  useEffect(() => {
+    if (initialData?.color) {
+      setColor(initialData.color);
+    }
+  }, [initialData, setColor]);
+  const bgStyle = { backgroundColor: color };
 
   // 카테고리 데이터를 가져오자
   useEffect(() => {
@@ -66,46 +75,51 @@ export default function NoteDetail({ initialData, refetchNote }) {
 
   return (
     <div
-      className="relative flex flex-col h-[calc(100vh-150px)]"
-      style={{
-        backgroundColor: initialData?.color ?? "#fef3c7", // note.color 값 사용, 없으면 기본 색
-      }}
+      className="relative flex flex-col h-[calc(100vh-150px)] px-2 rounded-md"
+      style={bgStyle}
     >
       <div className="flex">
-        <input
-          type="text"
-          placeholder="제목을 입력하세요"
-          className="bg-amber-100 text-xl font-semibold flex-1"
-          onChange={(e) => setTitle(e.target.value)}
-          value={title}
-          style={{
-            backgroundColor: initialData?.color ?? "#fef3c7", // note.color 값 사용, 없으면 기본 색
-          }}
-        />
-        <select
-          className="mr-2 rounded px-2 py-1 bg-amber-100"
-          style={{
-            backgroundColor: initialData?.color ?? "#fef3c7", // note.color 값 사용, 없으면 기본 색
-          }}
-          value={selectedCategoryNo}
-          key={selectedCategoryNo}
-          onChange={(e) => {
-            const selected = e.target.value;
-            if (selected === "-2") {
-              setShowCategoryPopup(true);
-            } else {
-              setSelectedCategoryNo(Number(selected));
-            }
-          }}
-        >
-          {/* <option value="add">➕ 추가</option> */}
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
-
+        <div className="flex justify-between items-center flex-1">
+          <input
+            type="text"
+            placeholder="제목을 입력하세요"
+            className="bg-amber-100 text-xl font-semibold flex-1"
+            onChange={(e) => setTitle(e.target.value)}
+            value={title}
+            style={bgStyle}
+          />
+          <div className="flex">
+            <select
+              className=""
+              style={bgStyle}
+              value={selectedCategoryNo}
+              key={selectedCategoryNo}
+              onChange={(e) => {
+                const selected = e.target.value;
+                if (selected === "-2") {
+                  setShowCategoryPopup(true);
+                } else {
+                  setSelectedCategoryNo(Number(selected));
+                }
+              }}
+            >
+              {/* <option value="add">➕ 추가</option> */}
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+            <button
+              className=""
+              onClick={() => setButtonAction((prev) => !prev)}
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M6 10a2 2 0 114.001-.001A2 2 0 016 10zm4 0a2 2 0 114.001-.001A2 2 0 0110 10zm4 0a2 2 0 114.001-.001A2 2 0 0114 10z" />
+              </svg>
+            </button>
+          </div>
+        </div>
         {/* 카테고리 팝업 */}
         <CategoryPopup
           setShow={setShowCategoryPopup}
@@ -120,17 +134,13 @@ export default function NoteDetail({ initialData, refetchNote }) {
           noteNo={initialData?.noteNo}
         />
 
-        <button onClick={() => setButtonAction((prev) => !prev)}>
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M6 10a2 2 0 114.001-.001A2 2 0 016 10zm4 0a2 2 0 114.001-.001A2 2 0 0110 10zm4 0a2 2 0 114.001-.001A2 2 0 0114 10z" />
-          </svg>
-        </button>
         {buttonAction && !initialData?.delDatetime && (
           <div
-            className="absolute right-0 top-5 mt-2 w-24 bg-white dark:bg-gray-700 border border-gray-200 rounded-xl shadow-lg z-20 text-sm"
+            className="absolute right-0 top-8 mt-2 w-24 bg-white dark:bg-gray-700 border border-gray-200 rounded-xl shadow-lg z-20 text-sm"
             ref={buttonRef}
           >
             <button
+              className="block w-full text-left px-4 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
               onClick={() => {
                 setShowColorPopup((prev) => !prev);
                 setButtonAction((prev) => !prev);

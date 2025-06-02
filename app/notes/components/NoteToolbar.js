@@ -106,7 +106,7 @@ export default function NoteToolbar({ editor }) {
       {/* 녹음버튼 슬라이스 */}
       <div
         className={`
-                fixed bottom-0 left-1/2 -translate-x-1/2 max-w-2xl mx-auto flex flex-col gap-5 py-4 px-10 h-45 w-full bg-white z-40 font-bold
+                fixed bottom-0 left-1/2 -translate-x-1/2 sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto flex flex-col gap-5 py-4 px-10 h-45 w-full bg-white z-40 font-bold
                 transform transition-transform duration-300
                 ${isRecordClick ? "translate-y-0" : "translate-y-full"}
         `}
@@ -124,7 +124,7 @@ export default function NoteToolbar({ editor }) {
             />
           ))}
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between px-36">
           <button
             onClick={() => setIsRecordClick(false)}
             className="flex flex-col items-center gap-1"
@@ -170,7 +170,7 @@ export default function NoteToolbar({ editor }) {
       </div>
 
       {/* 기본 툴바 */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-2xl mx-auto bg-white border-t px-4 py-2  flex justify-around">
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl  mx-auto bg-amber-100 border border-gray-300 rounded-xl px-4 py-2  flex justify-around">
         <button onClick={() => editor.chain().focus().toggleBold().run()}>
           <Bold className="w-5 h-5" />
         </button>
