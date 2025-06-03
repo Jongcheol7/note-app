@@ -1,7 +1,7 @@
 "use client";
 import Masonry from "react-masonry-css";
 import { useCommunityLists } from "../hooks/useCommunityLists";
-import { useSearchStore } from "@/store/SearchStore";
+import { useSearchStore } from "@/store/useSearchStore";
 import { useEffect, useRef } from "react";
 import NoteCard from "@/app/notes/components/NoteCard";
 
@@ -38,10 +38,7 @@ export default function CommunityLists() {
     };
   }, [hasNextPage, isFetchingNextPage, fetchNextPage, keyword]);
   if (isLoading) return <p>메모를 불러오는 중입니다...</p>;
-  if (isError)
-    return (
-      <p>에러가 발생했습니다... : {error?.message ?? "알 수 없는 오류"}</p>
-    );
+  if (isError) return <p>{error?.response?.data ?? "알 수 없는 오류"}</p>;
   if (!data || data.pages[0].notes.length === 0)
     return <p>아직 작성된 메모가 없습니다.</p>;
 

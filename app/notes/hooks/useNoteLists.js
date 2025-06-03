@@ -1,6 +1,6 @@
 // 해당 훅은 서버에 있는 메모리스트를 React Query 로 가져오도록 한다.
 "use client";
-import { useSearchStore } from "@/store/SearchStore";
+import { useSearchStore } from "@/store/useSearchStore";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 

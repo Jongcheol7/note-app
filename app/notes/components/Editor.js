@@ -8,7 +8,7 @@ import DOMPurify from "dompurify";
 import { ResizableImage } from "@/components/common/ResizableImage";
 import Image from "@tiptap/extension-image";
 
-export default function Editor({ onEditorReady, content }) {
+export default function Editor({ onEditorReady, content, menu }) {
   const safeHTML = DOMPurify.sanitize(content); // content 안에 <img src="data:..." />가 포함됨
 
   const editor = useEditor({
@@ -22,6 +22,7 @@ export default function Editor({ onEditorReady, content }) {
     ],
     autofocus: true,
     content: "", // ❌ 초기화 때는 비우고 useEffect에서 setContent 사용
+    editable: menu !== "community",
   });
 
   useEffect(() => {
@@ -36,8 +37,22 @@ export default function Editor({ onEditorReady, content }) {
   if (!editor) return null;
 
   return (
-    <div className="h-full">
-      <EditorContent editor={editor} className="tiptap h-full w-full" />
+    <div
+      className={`h-full`}
+      onCopy={menu === "community" ? (e) => e.preventDefault() : undefined}
+      onPaste={menu === "community" ? (e) => e.preventDefault() : undefined}
+      onCut={menu === "community" ? (e) => e.preventDefault() : undefined}
+      onContextMenu={
+        menu === "community" ? (e) => e.preventDefault() : undefined
+      }
+      onDragStart={menu === "community" ? (e) => e.preventDefault() : undefined}
+    >
+      <EditorContent
+        editor={editor}
+        className={`tiptap h-full w-full  ${
+          menu === "community" ? "no-select" : ""
+        }`}
+      />
     </div>
   );
 }

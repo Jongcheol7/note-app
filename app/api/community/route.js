@@ -15,7 +15,6 @@ export async function GET(request) {
   const skip = (page - 1) * pageSize;
 
   const whereCondition = {
-    userId,
     delDatetime: null,
     isPublic: true,
     ...(keyword && {
@@ -29,6 +28,15 @@ export async function GET(request) {
   try {
     const notes = await prisma.note.findMany({
       where: whereCondition,
+      include: {
+        _count: {
+          select: { likes: true },
+        },
+        likes: {
+          where: { userId },
+          select: { userId: true },
+        },
+      },
       orderBy: {
         sortOrder: "asc",
       },
@@ -44,12 +52,8 @@ export async function GET(request) {
 
     return Response.json({ notes, hasNextPage });
   } catch (err) {
-    return new Response(
-      JSON.stringify({ message: "노트 조회에 실패했습니다" }),
-      {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return new Response("노트 조회에 실패했습니다.", {
+      status: 404,
+    });
   }
 }

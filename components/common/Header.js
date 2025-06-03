@@ -12,12 +12,14 @@ import {
   Lock,
 } from "lucide-react";
 import Image from "next/image";
-import { useSearchStore } from "@/store/SearchStore";
+import { useSearchStore } from "@/store/useSearchStore";
+import { useFromStore } from "@/store/useFromStore";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: session, status } = useSession();
   const { keyword, setKeyword } = useSearchStore();
+  const { menuFrom, setMenuFrom } = useFromStore();
 
   return (
     <>
@@ -35,7 +37,7 @@ export default function Header() {
           placeholder="🔍 메모 검색"
           onChange={(e) => setKeyword(e.target.value)}
         />
-        <Link href={"/"}>
+        <Link href={"/"} onClick={() => setMenuFrom("note")}>
           <Home className="text-2xl font-medium text-gray-900 hover:text-red-800 transition-all duration-200">
             🏠
           </Home>
@@ -104,7 +106,11 @@ export default function Header() {
               <Lock />
               <span>비밀노트</span>
             </Link>
-            <Link href={"/community"} className="flex gap-1">
+            <Link
+              href={"/community"}
+              className="flex gap-1"
+              onClick={() => setMenuFrom("community")}
+            >
               <MessageSquare />
               <span>커뮤니티</span>
             </Link>

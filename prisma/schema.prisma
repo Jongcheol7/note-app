@@ -18,6 +18,7 @@ model User {
   categories    Category[]
   accounts      Account[]
   notes         Note[]
+  likes         Like[]
 
   @@map("user")
 }
@@ -69,13 +70,36 @@ model Category {
   @@map("category")
 }
 
+model Tags {
+  tagNo   Int     @id @default(autoincrement())
+  name    String
+  noteNo  Int 
+  inputDatetime DateTime @default(now())
+  
+  note    Note?   @relation(fields:[noteNo], references:[noteNo], onDelete: Cascade)
+  @@map("tags")
+  @@unique([name, noteNo])
+}
+
+model Like {
+  likeNo  Int     @id @default(autoincrement())
+  userId  String  
+  noteNo  Int     
+  inputDatetime DateTime @default(now())
+
+  user    User    @relation(fields:[userId], references:[id])
+  note    Note?   @relation(fields:[noteNo], references:[noteNo], onDelete: Cascade)
+
+  @@unique([userId, noteNo])
+  @@map("like")
+}
+
 model Note {
   noteNo        Int       @id @default(autoincrement())
   userId        String
   title         String
   content       String
   plainText     String
-  thumnail      String?
   categoryNo    Int?
   sortOrder     Int       @default(0)
   color         String?
@@ -84,8 +108,11 @@ model Note {
   modDatetime   DateTime?
   delDatetime   DateTime?
 
+  tags    Tags[]
+  likes   Like[]
+
   user          User      @relation(fields:[userId], references:[id])
   category      Category? @relation(fields:[categoryNo],references:[categoryNo])
-
+  
   @@map("note")
 }

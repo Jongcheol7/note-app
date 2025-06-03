@@ -1,5 +1,5 @@
 "use client";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useNoteDetail } from "../hooks/useNoteDetail";
 import NoteDetail from "../components/NoteDetail";
 

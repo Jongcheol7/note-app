@@ -1,4 +1,4 @@
-import { useSearchStore } from "@/store/SearchStore";
+import { useSearchStore } from "@/store/useSearchStore";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
 

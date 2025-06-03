@@ -1,10 +1,10 @@
 "use client";
-import { ColorStore } from "@/store/ColorStore";
+import { useColorStore } from "@/store/useColorStore";
 import NoteLists from "@app/notes/components/NoteLists";
 import { useEffect } from "react";
 
 export default function Home() {
-  const { initColor } = ColorStore();
+  const { initColor } = useColorStore();
 
   useEffect(() => {
     initColor();

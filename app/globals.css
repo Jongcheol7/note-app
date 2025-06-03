@@ -44,3 +44,9 @@ html, body {
 * {
   box-sizing: border-box;
 }
+
+/* tiptap 내부 전체 선택 방지 */
+.no-select * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}

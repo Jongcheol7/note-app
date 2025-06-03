@@ -11,8 +11,11 @@ import { useTrashRecovery } from "../hooks/useTrashRecovery";
 import { useTrashDelete } from "../hooks/useTrashDeleteMutation";
 import { HtmlToPlainText } from "@/components/common/HtmlToPlainText";
 import ColorPopup from "./ColorPopoup";
-import { ColorStore } from "@/store/ColorStore";
 import { usePublicMutation } from "../hooks/usePublicMutation";
+import { Heart } from "lucide-react";
+import { useLikeMutation } from "@/app/community/hooks/useLikeMutation";
+import { fromStore, useFromStore } from "@/store/useFromStore";
+import { useColorStore } from "@/store/useColorStore";
 
 export default function NoteDetail({ initialData, refetchNote }) {
   console.log("이니셜데이터 : ", initialData);
@@ -31,6 +34,8 @@ export default function NoteDetail({ initialData, refetchNote }) {
   ]);
   const [buttonAction, setButtonAction] = useState(false);
   const [isPublic, setIsPublic] = useState(initialData?.isPublic ?? false);
+  const [isLike, setIsLike] = useState(initialData?.likes.length > 0 ?? false);
+  const likeCnt = initialData?._count.likes;
 
   // Router
   const router = useRouter();
@@ -47,9 +52,12 @@ export default function NoteDetail({ initialData, refetchNote }) {
     useTrashDelete();
   const { data: categoryData, refetch } = useCategoryLists();
   const { mutate: publicMutate, isPending: isPublicing } = usePublicMutation();
+  const { mutate: likeMutate, isPending: isLiking } = useLikeMutation();
 
   // Zustand
-  const { color, setColor } = ColorStore();
+  const { color, setColor } = useColorStore();
+  const { menuFrom: menu } = useFromStore();
+  console.log("menuFrom : ", menu);
 
   useEffect(() => {
     if (initialData?.color) {
@@ -95,15 +103,17 @@ export default function NoteDetail({ initialData, refetchNote }) {
         <input
           type="text"
           placeholder="제목을 입력하세요"
-          className="bg-amber-100 text-xl font-semibold flex-1 border-black border"
+          className="bg-amber-100 text-xl font-semibold flex-1"
           onChange={(e) => setTitle(e.target.value)}
           value={title}
           style={bgStyle}
+          readOnly={menu === "community"}
         />
         <div className="flex">
           <select
             className=""
             style={bgStyle}
+            disabled={menu === "community"}
             value={selectedCategoryNo}
             key={selectedCategoryNo}
             onChange={(e) => {
@@ -149,7 +159,27 @@ export default function NoteDetail({ initialData, refetchNote }) {
           ref={buttonRef}
         >
           <div className="flex items-center px-4 py-1">
-            <span>배경색</span>
+            <span className="flex-1 text-gray-700">좋아요</span>
+            <button
+              onClick={() => {
+                likeMutate({ isLike: !isLike, noteNo: initialData?.noteNo });
+                setIsLike((prev) => !prev);
+              }}
+            >
+              <Heart
+                className={`w-5 h-5 transition-transform group-hover:scale-110 ${
+                  isLike ? "fill-red-500" : "fill-none"
+                }`}
+              />
+            </button>
+            <span className="text-gray-600 text-xs">x{likeCnt}</span>
+          </div>
+          <div
+            className={`flex items-center px-4 py-1 ${
+              menu === "community" ? "hidden" : "block"
+            }`}
+          >
+            <span className="flex-1 text-gray-700">배경색</span>
             <button
               className="w-5 h-5 ml-2 rounded-full"
               style={{
@@ -161,8 +191,14 @@ export default function NoteDetail({ initialData, refetchNote }) {
               }}
             />
           </div>
-          <div className="flex items-center px-4 py-1">
-            <span>{isPublic ? "공개" : "비공개"}</span>
+          <div
+            className={`flex items-center px-4 py-1  ${
+              menu === "community" ? "hidden" : "block"
+            }`}
+          >
+            <span className="flex-1 text-gray-700">
+              {isPublic ? "공개" : "비공개"}
+            </span>
             <button
               className={`relative ml-2 inline-flex items-center h-5 w-10 rounded-full transition-colors duration-300 ${
                 isPublic ? "bg-green-400" : "bg-gray-500"
@@ -182,7 +218,11 @@ export default function NoteDetail({ initialData, refetchNote }) {
               />
             </button>
           </div>
-          <div className="flex justify-between px-4 py-1">
+          <div
+            className={`flex justify-between px-4 py-1 ${
+              menu === "community" ? "hidden" : "block"
+            }`}
+          >
             <button
               className="hover:font-bold"
               disabled={isSaving}
@@ -191,7 +231,6 @@ export default function NoteDetail({ initialData, refetchNote }) {
                   {
                     noteNo: initialData?.noteNo,
                     title,
-                    thumnail: null,
                     categoryNo:
                       selectedCategoryNo === -1 ? null : selectedCategoryNo,
                     sortOrder: initialData?.sortOrder ?? null,
@@ -279,6 +318,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
         <Editor
           onEditorReady={setEditor}
           content={initialData?.content ?? ""}
+          menu={menu}
         />
       </div>
       <NoteToolbar editor={editor} />

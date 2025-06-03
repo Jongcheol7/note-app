@@ -1,12 +1,12 @@
 "use client";
-import { ColorStore } from "@/store/ColorStore";
 import "./globals.css";
 import Header from "@components/common/Header";
 import ReactQueryProvider from "@components/common/ReactQueryProvider";
 import SessionWrapper from "@components/common/SessionProvider";
+import { useColorStore } from "@/store/useColorStore";
 
 export default function RootLayout({ children }) {
-  const { color } = ColorStore();
+  const { color } = useColorStore();
   return (
     <html lang="en">
       <head>

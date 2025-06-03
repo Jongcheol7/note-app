@@ -5,8 +5,11 @@ import { authOptions } from "@app/api/auth/[...nextauth]/route";
 
 export async function GET(request) {
   const session = await getServerSession(authOptions);
+  console.log("세션 정보 확인 : ", session);
   if (!session || !session.user) {
-    return new Response("로그인된 유저가 아닙니다.", { status: 401 });
+    return new Response("로그인을 해야 메모를 불러올수 있습니다.", {
+      status: 401,
+    });
   }
   const userId = session.user.id;
 
@@ -31,6 +34,15 @@ export async function GET(request) {
   try {
     const notes = await prisma.note.findMany({
       where: whereCondition,
+      include: {
+        _count: {
+          select: { likes: true },
+        },
+        likes: {
+          where: { userId },
+          select: { userId: true },
+        },
+      },
       orderBy: {
         sortOrder: "asc",
       },

@@ -20,21 +20,30 @@ export async function GET(req) {
   try {
     const note = await prisma.note.findFirst({
       where: {
-        userId,
+        //userId,
         noteNo,
+      },
+      include: {
+        _count: {
+          select: { likes: true },
+        },
+        likes: {
+          where: { userId },
+          select: { userId: true },
+        },
       },
     });
 
     // 유저가 다르면 접근 차단
-    if (!note || note.userId !== userId) {
-      return new Response(
-        JSON.stringify({ message: "노트를 찾을 수 없습니다." }),
-        {
-          status: 404,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-    }
+    // if (!note || note.userId !== userId) {
+    //   return new Response(
+    //     JSON.stringify({ message: "노트를 찾을 수 없습니다." }),
+    //     {
+    //       status: 404,
+    //       headers: { "Content-Type": "application/json" },
+    //     }
+    //   );
+    // }
     return Response.json(note);
   } catch (err) {
     return new Response(
