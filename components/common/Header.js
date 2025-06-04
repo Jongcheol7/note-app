@@ -136,7 +136,7 @@ export default function Header() {
               )}
             </button>
             <Link
-              href={"/"}
+              href={"/settings"}
               onClick={() => setIsMenuOpen(false)}
               className="w-fit hover:text-blue-800 transition duration-300"
             >

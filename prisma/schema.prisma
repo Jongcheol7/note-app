@@ -20,6 +20,7 @@ model User {
   notes         Note[]
   likes         Like[]
 
+  settings      UserSettings?
   @@map("user")
 }
 
@@ -94,6 +95,15 @@ model Like {
   @@map("like")
 }
 
+model UserSettings {
+  userId        String    @id
+  secretNotePw  String?
+  inputDatetime DateTime  @default(now())
+  modDatetime   DateTime?
+
+  user  User  @relation(fields:[userId], references:[id])
+}
+
 model Note {
   noteNo        Int       @id @default(autoincrement())
   userId        String
@@ -104,6 +114,7 @@ model Note {
   sortOrder     Int       @default(0)
   color         String?
   isPublic      Boolean   @default(false)
+  isSecret      Boolean   @default(false)
   inputDatetime DateTime  @default(now())
   modDatetime   DateTime?
   delDatetime   DateTime?

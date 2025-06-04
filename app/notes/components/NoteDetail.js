@@ -12,7 +12,7 @@ import { useTrashDelete } from "../hooks/useTrashDeleteMutation";
 import { HtmlToPlainText } from "@/components/common/HtmlToPlainText";
 import ColorPopup from "./ColorPopoup";
 import { usePublicMutation } from "../hooks/usePublicMutation";
-import { Heart } from "lucide-react";
+import { Heart, Lock, Unlock } from "lucide-react";
 import { useLikeMutation } from "@/app/community/hooks/useLikeMutation";
 import { fromStore, useFromStore } from "@/store/useFromStore";
 import { useColorStore } from "@/store/useColorStore";
@@ -36,6 +36,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
   const [isPublic, setIsPublic] = useState(initialData?.isPublic ?? false);
   const [isLike, setIsLike] = useState(initialData?.likes.length > 0 ?? false);
   const likeCnt = initialData?._count.likes;
+  const [isSecret, setIsSecret] = useState(initialData?.password ?? false);
 
   // Router
   const router = useRouter();
@@ -158,6 +159,21 @@ export default function NoteDetail({ initialData, refetchNote }) {
           className="absolute right-0 top-5 w-26 py-1 pt-2 bg-gray-200 dark:bg-gray-700  rounded-xl shadow-lg z-20 text-sm"
           ref={buttonRef}
         >
+          <div className="flex items-center px-4 py-1">
+            <span className="flex-1 text-gray-700">비밀글</span>
+            <button
+              className=""
+              onClick={() => {
+                setIsSecret((prev) => !prev);
+              }}
+            >
+              {isSecret ? (
+                <Lock className="w-5 h-5" color="red" />
+              ) : (
+                <Unlock className="w-5 h-5" color="#10B981" />
+              )}
+            </button>
+          </div>
           <div className="flex items-center px-4 py-1">
             <span className="flex-1 text-gray-700">좋아요</span>
             <button
