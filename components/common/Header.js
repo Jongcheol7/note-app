@@ -14,12 +14,17 @@ import {
 import Image from "next/image";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useFromStore } from "@/store/useFromStore";
+import { useRouter } from "next/navigation";
+import PasswordCheckPopup from "@/app/settings/components/PasswordCheckPopup";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showPwPopup, setShowPwPopup] = useState(false);
   const { data: session, status } = useSession();
   const { keyword, setKeyword } = useSearchStore();
   const { menuFrom, setMenuFrom } = useFromStore();
+
+  const router = useRouter();
 
   return (
     <>
@@ -98,14 +103,17 @@ export default function Header() {
               <Bell />
               <span>알림</span>
             </Link>
-            <Link
-              href={"/"}
-              onClick={() => setIsMenuOpen(false)}
+            <button
+              onClick={() => {
+                setIsMenuOpen(false);
+                setShowPwPopup(true);
+              }}
               className="flex gap-1 w-fit hover:text-blue-800 transition duration-300"
             >
               <Lock />
               <span>비밀노트</span>
-            </Link>
+            </button>
+
             <Link
               href={"/community"}
               className="flex gap-1"
@@ -145,6 +153,15 @@ export default function Header() {
           </div>
         </nav>
       </aside>
+      {showPwPopup && (
+        <PasswordCheckPopup
+          setShow={setShowPwPopup}
+          onSuccess={() => {
+            setShowPwPopup(false);
+            router.push("/notes/secret");
+          }}
+        />
+      )}
     </>
   );
 }

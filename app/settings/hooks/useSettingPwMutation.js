@@ -16,9 +16,6 @@ export function useSettingPwMutation() {
         throw new Error(message);
       }
     },
-    onSuccess: () => {},
-    onError: (err) => {
-      alert(err.message);
-    },
+    onError: (err) => alert(err),
   });
 }

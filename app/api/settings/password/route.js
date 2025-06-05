@@ -18,6 +18,7 @@ export async function GET() {
       select: { secretNotePw: true },
     });
     const hasPw = !!result?.secretNotePw;
+    console.log("api라우트의 hasPw 결과값 : ", hasPw);
     return Response.json({ hasPw });
   } catch (err) {
     console.error("비밀번호 조회에에 실패했습니다.", err);
