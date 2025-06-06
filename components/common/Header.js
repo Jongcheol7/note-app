@@ -97,7 +97,10 @@ export default function Header() {
             </Link>
             <Link
               href={"/"}
-              onClick={() => setIsMenuOpen(false)}
+              onClick={() => {
+                setIsMenuOpen(false);
+                setMenuFrom("trash");
+              }}
               className="flex gap-1 w-fit hover:text-blue-800 transition duration-300"
             >
               <Bell />
@@ -107,6 +110,7 @@ export default function Header() {
               onClick={() => {
                 setIsMenuOpen(false);
                 setShowPwPopup(true);
+                setMenuFrom("secret");
               }}
               className="flex gap-1 w-fit hover:text-blue-800 transition duration-300"
             >

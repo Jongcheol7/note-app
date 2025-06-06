@@ -20,6 +20,15 @@ export async function GET(requset) {
         userId,
         delDatetime: { not: null },
       },
+      include: {
+        _count: {
+          select: { likes: true },
+        },
+        likes: {
+          where: { userId },
+          select: { userId: true },
+        },
+      },
       orderBy: {
         sortOrder: "asc",
       },

@@ -1,9 +1,16 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PasswordPopup from "./components/PasswordPopup";
+import { useColorStore } from "@/store/useColorStore";
 
 export default function SettingsPage() {
   const [showPwPopup, setShowPwPopup] = useState(false);
+  const { initColor } = useColorStore();
+
+  useEffect(() => {
+    initColor();
+  }, [initColor]);
+
   return (
     <div className="flex flex-col gap-5">
       <button

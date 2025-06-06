@@ -1,3 +1,14 @@
+"use client";
+import { useColorStore } from "@/store/useColorStore";
+import { useEffect } from "react";
+import NoteLists from "../components/NoteLists";
+
 export default function SecretPage() {
-  return <div>비밀노트 페이지입니다.</div>;
+  const { initColor } = useColorStore();
+
+  useEffect(() => {
+    initColor();
+  }, [initColor]);
+
+  return <NoteLists />;
 }

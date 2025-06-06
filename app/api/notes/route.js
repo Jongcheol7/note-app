@@ -17,12 +17,15 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get("page") || "1");
   const keyword = searchParams.get("keyword")?.trim() || "";
+  const menuFrom = searchParams.get("menuFrom")?.trim() || "";
+
   const pageSize = 10; //한 페이지에 몇개의 글을 보여줄지
   const skip = (page - 1) * pageSize; //앞에서 몇개의 글을 건너뛸지
 
   const whereCondition = {
     userId,
     delDatetime: null,
+    ...(menuFrom === "secret" ? { isSecret: true } : { isSecret: false }),
     ...(keyword && {
       OR: [
         { title: { contains: keyword, mode: "insensitive" } },

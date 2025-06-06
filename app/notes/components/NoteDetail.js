@@ -16,6 +16,7 @@ import { Heart, Lock, Unlock } from "lucide-react";
 import { useLikeMutation } from "@/app/community/hooks/useLikeMutation";
 import { fromStore, useFromStore } from "@/store/useFromStore";
 import { useColorStore } from "@/store/useColorStore";
+import { useSecretMutation } from "../hooks/useSecretMutation";
 
 export default function NoteDetail({ initialData, refetchNote }) {
   console.log("이니셜데이터 : ", initialData);
@@ -36,7 +37,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
   const [isPublic, setIsPublic] = useState(initialData?.isPublic ?? false);
   const [isLike, setIsLike] = useState(initialData?.likes.length > 0 ?? false);
   const likeCnt = initialData?._count.likes;
-  const [isSecret, setIsSecret] = useState(initialData?.password ?? false);
+  const [isSecret, setIsSecret] = useState(initialData?.isSecret ?? false);
 
   // Router
   const router = useRouter();
@@ -54,11 +55,12 @@ export default function NoteDetail({ initialData, refetchNote }) {
   const { data: categoryData, refetch } = useCategoryLists();
   const { mutate: publicMutate, isPending: isPublicing } = usePublicMutation();
   const { mutate: likeMutate, isPending: isLiking } = useLikeMutation();
+  const { mutate: secretMutate, isPending: isSecreting } = useSecretMutation();
 
   // Zustand
   const { color, setColor } = useColorStore();
   const { menuFrom: menu } = useFromStore();
-  console.log("menuFrom : ", menu);
+  //console.log("menuFrom : ", menu);
 
   useEffect(() => {
     if (initialData?.color) {
@@ -159,11 +161,16 @@ export default function NoteDetail({ initialData, refetchNote }) {
           className="absolute right-0 top-5 w-26 py-1 pt-2 bg-gray-200 dark:bg-gray-700  rounded-xl shadow-lg z-20 text-sm"
           ref={buttonRef}
         >
-          <div className="flex items-center px-4 py-1">
+          <div
+            className={`flex items-center px-4 py-1 ${
+              menu === "community" ? "hidden" : "block"
+            }`}
+          >
             <span className="flex-1 text-gray-700">비밀글</span>
             <button
               className=""
               onClick={() => {
+                secretMutate({ noteNo: initialData?.noteNo });
                 setIsSecret((prev) => !prev);
               }}
             >

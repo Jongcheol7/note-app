@@ -9,8 +9,6 @@ export default function NoteCard({ note }) {
   const formattedDate = new Date(note.inputDatetime).toLocaleDateString();
   const router = useRouter();
 
-  console.log("log : ", note);
-
   return (
     <div
       className="p-4 rounded-xl shadow-md hover:shadow-lg transition-all break-words"

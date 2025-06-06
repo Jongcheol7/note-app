@@ -4,9 +4,8 @@ import axios from "axios";
 export function useSecretMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ password, noteNo }) => {
-      const res = await axios.post(`/api/noates/secret`, {
-        password,
+    mutationFn: async ({ noteNo }) => {
+      const res = await axios.post(`/api/notes/secret`, {
         noteNo,
       });
       return res.data;
