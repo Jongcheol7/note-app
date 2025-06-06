@@ -12,11 +12,12 @@ import { useTrashDelete } from "../hooks/useTrashDeleteMutation";
 import { HtmlToPlainText } from "@/components/common/HtmlToPlainText";
 import ColorPopup from "./ColorPopoup";
 import { usePublicMutation } from "../hooks/usePublicMutation";
-import { Heart, Lock, Unlock } from "lucide-react";
+import { CalendarDays, Heart, Lock, Unlock } from "lucide-react";
 import { useLikeMutation } from "@/app/community/hooks/useLikeMutation";
-import { fromStore, useFromStore } from "@/store/useFromStore";
+import { useFromStore } from "@/store/useFromStore";
 import { useColorStore } from "@/store/useColorStore";
 import { useSecretMutation } from "../hooks/useSecretMutation";
+import CalenderPopup from "./CalenderPopup";
 
 export default function NoteDetail({ initialData, refetchNote }) {
   console.log("이니셜데이터 : ", initialData);
@@ -38,6 +39,8 @@ export default function NoteDetail({ initialData, refetchNote }) {
   const [isLike, setIsLike] = useState(initialData?.likes.length > 0 ?? false);
   const likeCnt = initialData?._count.likes;
   const [isSecret, setIsSecret] = useState(initialData?.isSecret ?? false);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   // Router
   const router = useRouter();
@@ -155,77 +158,90 @@ export default function NoteDetail({ initialData, refetchNote }) {
         refetch={refetchNote}
         noteNo={initialData?.noteNo}
       />
+      {/* 달력 팝업 */}
+      <CalenderPopup
+        setShow={setShowCalendar}
+        show={showCalendar}
+        selectedDate={initialData?.alarmDatetime}
+        noteNo={initialData?.noteNo}
+      />
 
       {buttonAction && !initialData?.delDatetime && (
         <div
-          className="absolute right-0 top-5 w-26 py-1 pt-2 bg-gray-200 dark:bg-gray-700  rounded-xl shadow-lg z-20 text-sm"
+          className="absolute right-0 top-5 w-36 py-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg z-20 text-sm space-y-1"
           ref={buttonRef}
         >
-          <div
-            className={`flex items-center px-4 py-1 ${
-              menu === "community" ? "hidden" : "block"
-            }`}
+          {/* 알림 설정 */}
+          <button
+            onClick={() => setShowCalendar((prev) => !prev)}
+            className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
           >
-            <span className="flex-1 text-gray-700">비밀글</span>
+            <CalendarDays className="w-5 h-5 text-blue-500" />
+            <span className="text-gray-800 dark:text-gray-200">알림 설정</span>
+          </button>
+
+          {/* 비밀글 */}
+          {menu !== "community" && (
             <button
-              className=""
               onClick={() => {
                 secretMutate({ noteNo: initialData?.noteNo });
                 setIsSecret((prev) => !prev);
               }}
+              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
             >
               {isSecret ? (
-                <Lock className="w-5 h-5" color="red" />
+                <Lock className="w-5 h-5 text-red-500" />
               ) : (
-                <Unlock className="w-5 h-5" color="#10B981" />
+                <Unlock className="w-5 h-5 text-green-500" />
               )}
+              <span className="text-gray-800 dark:text-gray-200">
+                {isSecret ? "비밀글 해제" : "비밀글 설정"}
+              </span>
             </button>
-          </div>
-          <div className="flex items-center px-4 py-1">
-            <span className="flex-1 text-gray-700">좋아요</span>
-            <button
-              onClick={() => {
-                likeMutate({ isLike: !isLike, noteNo: initialData?.noteNo });
-                setIsLike((prev) => !prev);
-              }}
-            >
-              <Heart
-                className={`w-5 h-5 transition-transform group-hover:scale-110 ${
-                  isLike ? "fill-red-500" : "fill-none"
-                }`}
-              />
-            </button>
-            <span className="text-gray-600 text-xs">x{likeCnt}</span>
-          </div>
-          <div
-            className={`flex items-center px-4 py-1 ${
-              menu === "community" ? "hidden" : "block"
-            }`}
+          )}
+
+          {/* 좋아요 */}
+          <button
+            onClick={() => {
+              likeMutate({ isLike: !isLike, noteNo: initialData?.noteNo });
+              setIsLike((prev) => !prev);
+            }}
+            className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
           >
-            <span className="flex-1 text-gray-700">배경색</span>
+            <Heart
+              className={`w-5 h-5 ${
+                isLike ? "fill-red-500 text-red-500" : "fill-none text-gray-600"
+              }`}
+            />
+            <span className="text-gray-800 dark:text-gray-200">
+              좋아요 {likeCnt ? `x${likeCnt}` : ""}
+            </span>
+          </button>
+
+          {/* 배경색 */}
+          {menu !== "community" && (
             <button
-              className="w-5 h-5 ml-2 rounded-full"
-              style={{
-                background: "conic-gradient(red, yellow, green, violet)",
-              }}
               onClick={() => {
                 setShowColorPopup((prev) => !prev);
-                setButtonAction((prev) => !prev);
+                setButtonAction(false);
               }}
-            />
-          </div>
-          <div
-            className={`flex items-center px-4 py-1  ${
-              menu === "community" ? "hidden" : "block"
-            }`}
-          >
-            <span className="flex-1 text-gray-700">
-              {isPublic ? "공개" : "비공개"}
-            </span>
+              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
+            >
+              <div
+                className="w-5 h-5 rounded-full border"
+                style={{
+                  background: "conic-gradient(red, yellow, green, violet)",
+                }}
+              />
+              <span className="text-gray-800 dark:text-gray-200">
+                배경색 선택
+              </span>
+            </button>
+          )}
+
+          {/* 공개/비공개 */}
+          {menu !== "community" && (
             <button
-              className={`relative ml-2 inline-flex items-center h-5 w-10 rounded-full transition-colors duration-300 ${
-                isPublic ? "bg-green-400" : "bg-gray-500"
-              }`}
               onClick={() => {
                 publicMutate({
                   isPublic: !isPublic,
@@ -233,68 +249,73 @@ export default function NoteDetail({ initialData, refetchNote }) {
                 });
                 setIsPublic((prev) => !prev);
               }}
+              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
             >
-              <span
-                className={`inline-block h-4 w-4 transform bg-white rounded-full ${
-                  isPublic ? "translate-x-5" : "translate-x-0"
+              <div
+                className={`w-5 h-5 rounded-full ${
+                  isPublic ? "bg-green-400" : "bg-gray-400"
                 }`}
               />
+              <span className="text-gray-800 dark:text-gray-200">
+                {isPublic ? "공개 설정" : "공개 해제"}
+              </span>
             </button>
-          </div>
-          <div
-            className={`flex justify-between px-4 py-1 ${
-              menu === "community" ? "hidden" : "block"
-            }`}
-          >
-            <button
-              className="hover:font-bold"
-              disabled={isSaving}
-              onClick={() => {
-                saveMutate(
-                  {
-                    noteNo: initialData?.noteNo,
-                    title,
-                    categoryNo:
-                      selectedCategoryNo === -1 ? null : selectedCategoryNo,
-                    sortOrder: initialData?.sortOrder ?? null,
-                    content: editor.getHTML(),
-                    plainText: HtmlToPlainText(editor.getHTML()),
-                  },
-                  {
-                    onSuccess: () => {
-                      alert("✅ 저장 완료!");
-                      refetchNote();
-                      router.push("/");
+          )}
+
+          {/* 저장/삭제 */}
+          {menu !== "community" && (
+            <div className="flex justify-between items-center px-3 pt-2">
+              <button
+                className="text-sm text-blue-600 hover:font-bold"
+                disabled={isSaving}
+                onClick={() => {
+                  saveMutate(
+                    {
+                      noteNo: initialData?.noteNo,
+                      title,
+                      categoryNo:
+                        selectedCategoryNo === -1 ? null : selectedCategoryNo,
+                      sortOrder: initialData?.sortOrder ?? null,
+                      content: editor.getHTML(),
+                      plainText: HtmlToPlainText(editor.getHTML()),
                     },
-                  }
-                );
-              }}
-            >
-              {isSaving ? "저장중" : "저장"}
-            </button>
-            <button
-              className="hover:font-bold text-red-500"
-              disabled={isDeleting}
-              onClick={() => {
-                deleteMutate(
-                  {
-                    noteNo: initialData?.noteNo,
-                  },
-                  {
-                    onSuccess: () => {
-                      alert("삭제 완료!");
-                      refetchNote();
-                      router.push("/");
+                    {
+                      onSuccess: () => {
+                        alert("✅ 저장 완료!");
+                        refetchNote();
+                        router.push("/");
+                      },
+                    }
+                  );
+                }}
+              >
+                {isSaving ? "저장중" : "저장하기"}
+              </button>
+              <button
+                className="text-sm text-red-500 hover:font-bold"
+                disabled={isDeleting}
+                onClick={() => {
+                  deleteMutate(
+                    {
+                      noteNo: initialData?.noteNo,
                     },
-                  }
-                );
-              }}
-            >
-              {isDeleting ? "삭제중" : "삭제"}
-            </button>
-          </div>
+                    {
+                      onSuccess: () => {
+                        alert("삭제 완료!");
+                        refetchNote();
+                        router.push("/");
+                      },
+                    }
+                  );
+                }}
+              >
+                {isDeleting ? "삭제중" : "삭제하기"}
+              </button>
+            </div>
+          )}
         </div>
       )}
+
       {buttonAction && initialData?.delDatetime && (
         <div className="absolute right-0 top-5 mt-2  w-24 bg-white dark:bg-gray-700 border border-gray-200 rounded-xl shadow-lg z-20 text-sm">
           <button

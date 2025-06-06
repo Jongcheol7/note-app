@@ -115,6 +115,7 @@ model Note {
   color         String?
   isPublic      Boolean   @default(false)
   isSecret      Boolean   @default(false)
+  alarmDatetime DateTime?
   inputDatetime DateTime  @default(now())
   modDatetime   DateTime?
   delDatetime   DateTime?
