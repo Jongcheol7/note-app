@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { useCategoryMutation } from "@app/notes/hooks/useCategoryMutation";
+import { useCategoryMutation } from "../hooks/useCategoryMutation";
 
 export default function CategoryPopup({ setShow, show, refetch }) {
   const sampleList = ["쇼핑", "개인적인", "일기", "학교"];

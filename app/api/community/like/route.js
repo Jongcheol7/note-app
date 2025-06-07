@@ -33,7 +33,7 @@ export async function POST(request) {
 
     return new Response(JSON.stringify(result), { status: 200 });
   } catch (err) {
-    console.error("좋아요 변경에에 실패했습니다. : ", err);
-    return new Response("좋아요 변경에에 실패했습니다.", { status: 500 });
+    console.error("좋아요 변경에 실패했습니다. : ", err);
+    return new Response("좋아요 변경에 실패했습니다.", { status: 500 });
   }
 }

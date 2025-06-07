@@ -5,7 +5,7 @@ export function useCategoryLists() {
   return useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      return await axios.get("/api/notes/category").then((res) => res.data);
+      return await axios.get("/api/category").then((res) => res.data);
     },
   });
 }

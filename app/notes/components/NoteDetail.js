@@ -4,8 +4,6 @@ import NoteToolbar from "@app/notes/components/NoteToolbar";
 import { useNoteMutation } from "@app/notes/hooks/useNoteMutation";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import CategoryPopup from "@app/notes/components/CategoryPopup";
-import { useCategoryLists } from "../hooks/useCategoryLists";
 import { useNoteDeleteMutation } from "../hooks/useNoteDeleteMutation";
 import { useTrashRecovery } from "../hooks/useTrashRecovery";
 import { useTrashDelete } from "../hooks/useTrashDeleteMutation";
@@ -18,6 +16,8 @@ import { useFromStore } from "@/store/useFromStore";
 import { useColorStore } from "@/store/useColorStore";
 import { useSecretMutation } from "../hooks/useSecretMutation";
 import CalenderPopup from "@/app/calendar/components/CalenderPopup";
+import CategoryPopup from "@/app/category/components/CategoryPopup";
+import { useCategoryLists } from "@/app/category/hooks/useCategoryLists";
 
 export default function NoteDetail({ initialData, refetchNote }) {
   console.log("이니셜데이터 : ", initialData);
@@ -40,7 +40,6 @@ export default function NoteDetail({ initialData, refetchNote }) {
   const likeCnt = initialData?._count.likes;
   const [isSecret, setIsSecret] = useState(initialData?.isSecret ?? false);
   const [showCalendar, setShowCalendar] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
 
   // Router
   const router = useRouter();

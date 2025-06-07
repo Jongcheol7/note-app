@@ -10,6 +10,8 @@ import {
   Trash2,
   Bell,
   Lock,
+  Calendar,
+  Folders,
 } from "lucide-react";
 import Image from "next/image";
 import { useSearchStore } from "@/store/useSearchStore";
@@ -103,7 +105,7 @@ export default function Header() {
               }}
               className="flex gap-1 w-fit hover:text-blue-800 transition duration-300"
             >
-              <Bell />
+              <Calendar />
               <span>달력</span>
             </Link>
             <button
@@ -120,7 +122,7 @@ export default function Header() {
 
             <Link
               href={"/community"}
-              className="flex gap-1"
+              className="flex gap-1 w-fit hover:text-blue-800 transition duration-300"
               onClick={() => {
                 setIsMenuOpen(false);
                 setMenuFrom("community");
@@ -128,6 +130,18 @@ export default function Header() {
             >
               <MessageSquare />
               <span>커뮤니티</span>
+            </Link>
+
+            <Link
+              href={"/category"}
+              className="flex gap-1 w-fit hover:text-blue-800 transition duration-300"
+              onClick={() => {
+                setIsMenuOpen(false);
+                setMenuFrom("category");
+              }}
+            >
+              <Folders />
+              <span>카테고리</span>
             </Link>
           </div>
 

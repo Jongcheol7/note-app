@@ -3,9 +3,8 @@
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import ko from "date-fns/locale/ko";
 import { useAlarmMutation } from "../hooks/useAlarmMutation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function CalenderPopup({ show, setShow, selectedDate, noteNo }) {
   const { mutate, isPending } = useAlarmMutation();
@@ -29,7 +28,7 @@ export default function CalenderPopup({ show, setShow, selectedDate, noteNo }) {
 
             <LocalizationProvider
               dateAdapter={AdapterDateFns}
-              adapterLocale={ko}
+              //adapterLocale={koKR}
             >
               <DateTimePicker
                 value={new Date(newDate)}
