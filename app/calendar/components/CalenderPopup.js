@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 
 export default function CalenderPopup({ show, setShow, selectedDate, noteNo }) {
   const { mutate, isPending } = useAlarmMutation();
-  const [newDate, setNewDate] = useState(selectedDate);
+  const [newDate, setNewDate] = useState(selectedDate ?? new Date());
 
   return (
     <>

@@ -96,15 +96,15 @@ export default function Header() {
               <span>휴지통</span>
             </Link>
             <Link
-              href={"/"}
+              href={"/calendar"}
               onClick={() => {
                 setIsMenuOpen(false);
-                setMenuFrom("trash");
+                setMenuFrom("calendar");
               }}
               className="flex gap-1 w-fit hover:text-blue-800 transition duration-300"
             >
               <Bell />
-              <span>알림</span>
+              <span>달력</span>
             </Link>
             <button
               onClick={() => {
@@ -121,7 +121,10 @@ export default function Header() {
             <Link
               href={"/community"}
               className="flex gap-1"
-              onClick={() => setMenuFrom("community")}
+              onClick={() => {
+                setIsMenuOpen(false);
+                setMenuFrom("community");
+              }}
             >
               <MessageSquare />
               <span>커뮤니티</span>

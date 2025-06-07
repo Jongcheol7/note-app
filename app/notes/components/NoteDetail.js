@@ -17,7 +17,7 @@ import { useLikeMutation } from "@/app/community/hooks/useLikeMutation";
 import { useFromStore } from "@/store/useFromStore";
 import { useColorStore } from "@/store/useColorStore";
 import { useSecretMutation } from "../hooks/useSecretMutation";
-import CalenderPopup from "./CalenderPopup";
+import CalenderPopup from "@/app/calendar/components/CalenderPopup";
 
 export default function NoteDetail({ initialData, refetchNote }) {
   console.log("이니셜데이터 : ", initialData);
