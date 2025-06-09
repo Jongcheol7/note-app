@@ -106,6 +106,27 @@ export default function NoteDetail({ initialData, refetchNote }) {
       className="relative flex flex-col h-[calc(100vh-150px)] px-2 rounded-md"
       style={bgStyle}
     >
+      <select
+        className="ml-auto w-auto max-w-[200px] px-2 py-1 rounded-md text-sm"
+        style={bgStyle}
+        disabled={menu === "community"}
+        value={selectedCategoryNo}
+        key={selectedCategoryNo}
+        onChange={(e) => {
+          const selected = e.target.value;
+          if (selected === "-2") {
+            setShowCategoryPopup(true);
+          } else {
+            setSelectedCategoryNo(Number(selected));
+          }
+        }}
+      >
+        {categories.map((cat) => (
+          <option key={cat.id} value={cat.id}>
+            {cat.name}
+          </option>
+        ))}
+      </select>
       <div className="flex">
         <input
           type="text"
@@ -116,34 +137,12 @@ export default function NoteDetail({ initialData, refetchNote }) {
           style={bgStyle}
           readOnly={menu === "community"}
         />
-        <div className="flex">
-          <select
-            className=""
-            style={bgStyle}
-            disabled={menu === "community"}
-            value={selectedCategoryNo}
-            key={selectedCategoryNo}
-            onChange={(e) => {
-              const selected = e.target.value;
-              if (selected === "-2") {
-                setShowCategoryPopup(true);
-              } else {
-                setSelectedCategoryNo(Number(selected));
-              }
-            }}
-          >
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-          <button className="" onClick={() => setButtonAction((prev) => !prev)}>
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M6 10a2 2 0 114.001-.001A2 2 0 016 10zm4 0a2 2 0 114.001-.001A2 2 0 0110 10zm4 0a2 2 0 114.001-.001A2 2 0 0114 10z" />
-            </svg>
-          </button>
-        </div>
+
+        <button className="" onClick={() => setButtonAction((prev) => !prev)}>
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M6 10a2 2 0 114.001-.001A2 2 0 016 10zm4 0a2 2 0 114.001-.001A2 2 0 0110 10zm4 0a2 2 0 114.001-.001A2 2 0 0114 10z" />
+          </svg>
+        </button>
       </div>
       {/* 카테고리 팝업 */}
       <CategoryPopup
@@ -169,7 +168,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
 
       {buttonAction && !initialData?.delDatetime && (
         <div
-          className="absolute right-0 top-5 w-36 py-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg z-20 text-sm space-y-1"
+          className="absolute right-0 top-14 w-36 py-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg z-20 text-sm space-y-1"
           ref={buttonRef}
         >
           {/* 알림 설정 */}
