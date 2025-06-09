@@ -3,7 +3,7 @@ import Editor from "@app/notes/components/Editor";
 import NoteToolbar from "@app/notes/components/NoteToolbar";
 import { useNoteMutation } from "@app/notes/hooks/useNoteMutation";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNoteDeleteMutation } from "../hooks/useNoteDeleteMutation";
 import { useTrashRecovery } from "../hooks/useTrashRecovery";
 import { useTrashDelete } from "../hooks/useTrashDeleteMutation";
@@ -18,25 +18,33 @@ import { useSecretMutation } from "../hooks/useSecretMutation";
 import CalenderPopup from "@/app/calendar/components/CalenderPopup";
 import CategoryPopup from "@/app/category/components/CategoryPopup";
 import { useCategoryLists } from "@/app/category/hooks/useCategoryLists";
+import { useNoteForm } from "../hooks/useNoteForm";
 
 export default function NoteDetail({ initialData, refetchNote }) {
   console.log("이니셜데이터 : ", initialData);
-
+  const noteNo = initialData?.noteNo;
   // useState
   const [editor, setEditor] = useState(null);
-  const [title, setTitle] = useState(initialData?.title ?? "");
-  const [selectedCategoryNo, setSelectedCategoryNo] = useState(
-    initialData?.categoryNo ?? -1
-  );
+  //const [categories, setCategories] = useState([]);
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
   const [showColorPopup, setShowColorPopup] = useState(false);
-  const [categories, setCategories] = useState([]);
   const [buttonAction, setButtonAction] = useState(false);
-  const [isPublic, setIsPublic] = useState(initialData?.isPublic ?? false);
-  const [isLike, setIsLike] = useState(initialData?.likes.length > 0 ?? false);
-  const likeCnt = initialData?._count.likes;
-  const [isSecret, setIsSecret] = useState(initialData?.isSecret ?? false);
   const [showCalendar, setShowCalendar] = useState(false);
+  const {
+    title,
+    setTitle,
+    selectedCategoryNo,
+    setSelectedCategoryNo,
+    selectedColor,
+    setSelectedColor,
+    isPublic,
+    togglePublic,
+    isSecret,
+    toggleSecret,
+    isLike,
+    toggleLike,
+  } = useNoteForm(initialData);
+  const likeCnt = initialData?._count.likes;
 
   // Router
   const router = useRouter();
@@ -52,35 +60,25 @@ export default function NoteDetail({ initialData, refetchNote }) {
   const { mutate: trashDeleteMutate, isPending: isTrashDeleting } =
     useTrashDelete();
   const { data: categoryData, refetch } = useCategoryLists();
-  const { mutate: publicMutate, isPending: isPublicing } = usePublicMutation();
-  const { mutate: likeMutate, isPending: isLiking } = useLikeMutation();
-  const { mutate: secretMutate, isPending: isSecreting } = useSecretMutation();
+  const { mutate: publicMutate } = usePublicMutation();
+  const { mutate: likeMutate } = useLikeMutation();
+  const { mutate: secretMutate } = useSecretMutation();
 
   // Zustand
-  const { color, setColor } = useColorStore();
   const { menuFrom: menu } = useFromStore();
-  //console.log("menuFrom : ", menu);
-
-  useEffect(() => {
-    if (initialData?.color) {
-      setColor(initialData.color);
-    }
-  }, [initialData, setColor]);
-  const bgStyle = { backgroundColor: color };
+  const bgStyle = { backgroundColor: selectedColor };
 
   // 카테고리 데이터를 가져오자
-  useEffect(() => {
-    if (categoryData) {
-      const converted = [
-        { id: -2, name: "➕ 추가" },
-        { id: -1, name: "분류되지 않음" },
-        ...categoryData.map((category) => ({
-          id: category.categoryNo,
-          name: category.name,
-        })),
-      ];
-      setCategories(converted);
-    }
+  const categories = useMemo(() => {
+    if (!categoryData?.length) return [];
+    return [
+      { id: -2, name: "➕ 추가" },
+      { id: -1, name: "분류되지 않음" },
+      ...categoryData.map((cat) => ({
+        id: cat.categoryNo,
+        name: cat.name,
+      })),
+    ];
   }, [categoryData]);
 
   // 외부 클릭시 ... 토글 비활성화 하자.
@@ -150,15 +148,16 @@ export default function NoteDetail({ initialData, refetchNote }) {
       <ColorPopup
         setShow={setShowColorPopup}
         show={showColorPopup}
-        refetch={refetchNote}
-        noteNo={initialData?.noteNo}
+        //refetch={refetchNote}
+        noteNo={noteNo}
+        setSelectedColor={setSelectedColor}
       />
       {/* 달력 팝업 */}
       <CalenderPopup
         setShow={setShowCalendar}
         show={showCalendar}
         selectedDate={initialData?.alarmDatetime}
-        noteNo={initialData?.noteNo}
+        noteNo={noteNo}
       />
 
       {buttonAction && !initialData?.delDatetime && (
@@ -179,8 +178,13 @@ export default function NoteDetail({ initialData, refetchNote }) {
           {menu !== "community" && (
             <button
               onClick={() => {
-                secretMutate({ noteNo: initialData?.noteNo });
-                setIsSecret((prev) => !prev);
+                secretMutate(
+                  { noteNo: noteNo },
+                  {
+                    onSuccess: () => toggleSecret(),
+                    onError: () => alert("비밀글 설정 실패"),
+                  }
+                );
               }}
               className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
             >
@@ -196,22 +200,31 @@ export default function NoteDetail({ initialData, refetchNote }) {
           )}
 
           {/* 좋아요 */}
-          <button
-            onClick={() => {
-              likeMutate({ isLike: !isLike, noteNo: initialData?.noteNo });
-              setIsLike((prev) => !prev);
-            }}
-            className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
-          >
-            <Heart
-              className={`w-5 h-5 ${
-                isLike ? "fill-red-500 text-red-500" : "fill-none text-gray-600"
-              }`}
-            />
-            <span className="text-gray-800 dark:text-gray-200">
-              좋아요 {likeCnt ? `x${likeCnt}` : ""}
-            </span>
-          </button>
+          {initialData && (
+            <button
+              onClick={() => {
+                likeMutate(
+                  { isLike: !isLike, noteNo: noteNo },
+                  {
+                    onSuccess: () => toggleLike(),
+                    onError: () => alert("좋아요 실패"),
+                  }
+                );
+              }}
+              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
+            >
+              <Heart
+                className={`w-5 h-5 ${
+                  isLike
+                    ? "fill-red-500 text-red-500"
+                    : "fill-none text-gray-600"
+                }`}
+              />
+              <span className="text-gray-800 dark:text-gray-200">
+                좋아요 {likeCnt ? `x${likeCnt}` : ""}
+              </span>
+            </button>
+          )}
 
           {/* 배경색 */}
           {menu !== "community" && (
@@ -238,11 +251,16 @@ export default function NoteDetail({ initialData, refetchNote }) {
           {menu !== "community" && (
             <button
               onClick={() => {
-                publicMutate({
-                  isPublic: !isPublic,
-                  noteNo: initialData?.noteNo,
-                });
-                setIsPublic((prev) => !prev);
+                publicMutate(
+                  {
+                    isPublic: !isPublic,
+                    noteNo: noteNo,
+                  },
+                  {
+                    onSuccess: () => togglePublic(),
+                    onError: () => alert("공개/비공개 설정 실패"),
+                  }
+                );
               }}
               className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
             >
@@ -266,13 +284,14 @@ export default function NoteDetail({ initialData, refetchNote }) {
                 onClick={() => {
                   saveMutate(
                     {
-                      noteNo: initialData?.noteNo,
+                      noteNo: noteNo,
                       title,
                       categoryNo:
                         selectedCategoryNo === -1 ? null : selectedCategoryNo,
                       sortOrder: initialData?.sortOrder ?? null,
                       content: editor.getHTML(),
                       plainText: HtmlToPlainText(editor.getHTML()),
+                      color: selectedColor,
                     },
                     {
                       onSuccess: () => {
@@ -291,9 +310,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
                 disabled={isDeleting}
                 onClick={() => {
                   deleteMutate(
-                    {
-                      noteNo: initialData?.noteNo,
-                    },
+                    { noteNo: noteNo },
                     {
                       onSuccess: () => {
                         alert("삭제 완료!");
