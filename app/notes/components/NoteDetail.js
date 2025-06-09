@@ -25,7 +25,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
   const noteNo = initialData?.noteNo;
   // useState
   const [editor, setEditor] = useState(null);
-  //const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
   const [showColorPopup, setShowColorPopup] = useState(false);
   const [buttonAction, setButtonAction] = useState(false);
@@ -71,17 +71,22 @@ export default function NoteDetail({ initialData, refetchNote }) {
   const bgStyle = { backgroundColor: selectedColor };
 
   // 카테고리 데이터를 가져오자
-  const categories = useMemo(() => {
-    if (!categoryData?.length) return [];
-    return [
-      { id: -2, name: "➕ 추가" },
-      { id: -1, name: "분류되지 않음" },
-      ...categoryData.map((cat) => ({
-        id: cat.categoryNo,
-        name: cat.name,
-      })),
-    ];
+  // 카테고리 데이터를 가져오자
+  useEffect(() => {
+    if (categoryData) {
+      const converted = [
+        { id: -2, name: "➕ 추가" },
+        { id: -1, name: "분류되지 않음" },
+        ...categoryData.map((category) => ({
+          id: category.categoryNo,
+          name: category.name,
+        })),
+      ];
+      setCategories(converted);
+    }
   }, [categoryData]);
+
+  console.log("카테고리 ! : ", categories);
 
   // 외부 클릭시 ... 토글 비활성화 하자.
   useEffect(() => {
