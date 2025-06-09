@@ -10,7 +10,7 @@ export function useTrashDelete() {
         .then((res) => res.data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["noteList"]);
+      //queryClient.invalidateQueries(["noteList"]);
       queryClient.invalidateQueries(["trashLists"]);
     },
     onError: (err) => console.log("메모 영구삭제 실패 : ", err),

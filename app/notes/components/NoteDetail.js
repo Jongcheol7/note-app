@@ -30,10 +30,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
   );
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
   const [showColorPopup, setShowColorPopup] = useState(false);
-  const [categories, setCategories] = useState([
-    { id: -2, name: "➕ 추가" },
-    { id: -1, name: "분류되지 않음" },
-  ]);
+  const [categories, setCategories] = useState([]);
   const [buttonAction, setButtonAction] = useState(false);
   const [isPublic, setIsPublic] = useState(initialData?.isPublic ?? false);
   const [isLike, setIsLike] = useState(initialData?.likes.length > 0 ?? false);
@@ -130,7 +127,6 @@ export default function NoteDetail({ initialData, refetchNote }) {
               }
             }}
           >
-            {/* <option value="add">➕ 추가</option> */}
             {categories.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.name}

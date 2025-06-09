@@ -4,6 +4,7 @@ import { authOptions } from "../auth/[...nextauth]/route";
 export async function GET(request) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user) {
+    console.log("로그인된 유저가 아닙니다.");
     return new Response("로그인된 유저가 아닙니다.", { status: 401 });
   }
   const userId = session.user.id;

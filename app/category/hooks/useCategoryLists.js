@@ -5,7 +5,12 @@ export function useCategoryLists() {
   return useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      return await axios.get("/api/category").then((res) => res.data);
+      try {
+        return await axios.get("/api/category").then((res) => res.data);
+      } catch (err) {
+        const message = err.response?.data || "에러발생!";
+        throw new Error(message);
+      }
     },
   });
 }

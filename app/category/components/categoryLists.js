@@ -13,7 +13,13 @@ import { useCategoryReorder } from "../hooks/useCategoryReorder";
 export default function CategoryLists() {
   // ✅ 카테고리 목록을 서버에서 불러오는 중인지 확인 + 불러온 데이터
   // 👉 useCategoryLists 안에서 React Query를 쓰든 Axios를 쓰든 관계없음
-  const { data: categories = [], isLoading, refetch } = useCategoryLists();
+  const {
+    data: categories = [],
+    isLoading,
+    refetch,
+    isError,
+    error,
+  } = useCategoryLists();
   const { mutate: delCategoryMutate, isPending: isDeleting } =
     useCategoryDelete();
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
@@ -23,6 +29,9 @@ export default function CategoryLists() {
   // ✅ 데이터 로딩 중이면 간단한 메시지 보여줌
   if (isLoading) {
     return <div>로딩중입니다...</div>;
+  }
+  if (isError) {
+    return <div>{error.message ?? "알 수 없는 오류입니다."}</div>;
   }
 
   /**
