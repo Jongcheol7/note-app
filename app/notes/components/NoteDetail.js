@@ -148,7 +148,6 @@ export default function NoteDetail({ initialData, refetchNote }) {
       <ColorPopup
         setShow={setShowColorPopup}
         show={showColorPopup}
-        //refetch={refetchNote}
         noteNo={noteNo}
         setSelectedColor={setSelectedColor}
       />
@@ -178,13 +177,19 @@ export default function NoteDetail({ initialData, refetchNote }) {
           {menu !== "community" && (
             <button
               onClick={() => {
-                secretMutate(
-                  { noteNo: noteNo },
-                  {
-                    onSuccess: () => toggleSecret(),
-                    onError: () => alert("비밀글 설정 실패"),
-                  }
-                );
+                if (!noteNo) {
+                  //새글일때는 저장할때 저장되도록 한다.
+                  toggleSecret();
+                } else {
+                  //수정글일때는 누르면 즉각 변경되도록 한다.
+                  secretMutate(
+                    { noteNo: noteNo },
+                    {
+                      onSuccess: () => toggleSecret(),
+                      onError: () => alert("비밀글 설정 실패"),
+                    }
+                  );
+                }
               }}
               className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
             >
@@ -251,16 +256,22 @@ export default function NoteDetail({ initialData, refetchNote }) {
           {menu !== "community" && (
             <button
               onClick={() => {
-                publicMutate(
-                  {
-                    isPublic: !isPublic,
-                    noteNo: noteNo,
-                  },
-                  {
-                    onSuccess: () => togglePublic(),
-                    onError: () => alert("공개/비공개 설정 실패"),
-                  }
-                );
+                if (!noteNo) {
+                  //새글일때는 저장할때 저장되도록 한다.
+                  togglePublic();
+                } else {
+                  //수정글일때는 누르면 즉각 변경되도록 한다.
+                  publicMutate(
+                    {
+                      isPublic: !isPublic,
+                      noteNo: noteNo,
+                    },
+                    {
+                      onSuccess: () => togglePublic(),
+                      onError: () => alert("공개/비공개 설정 실패"),
+                    }
+                  );
+                }
               }}
               className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
             >
@@ -292,6 +303,8 @@ export default function NoteDetail({ initialData, refetchNote }) {
                       content: editor.getHTML(),
                       plainText: HtmlToPlainText(editor.getHTML()),
                       color: selectedColor,
+                      isSecret,
+                      isPublic,
                     },
                     {
                       onSuccess: () => {

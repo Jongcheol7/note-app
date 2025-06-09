@@ -6,8 +6,17 @@ import { authOptions } from "@app/api/auth/[...nextauth]/route";
 export async function POST(requset) {
   try {
     // 리엑트쿼리로 넘겨받은 데이터 가져오기
-    const { noteNo, title, categoryNo, sortOrder, content, plainText, color } =
-      await requset.json();
+    const {
+      noteNo,
+      title,
+      categoryNo,
+      sortOrder,
+      content,
+      plainText,
+      color,
+      isSecret,
+      isPublic,
+    } = await requset.json();
     if (!content || content.trim().length === 0) {
       console.error("내용이 없습니다.");
       return new Response("내용이 없습니다.", { status: 401 });
@@ -61,6 +70,8 @@ export async function POST(requset) {
         plainText,
         categoryNo,
         color,
+        isSecret,
+        isPublic,
         sortOrder: sortOrder ?? sortOrderValue,
       },
     });
