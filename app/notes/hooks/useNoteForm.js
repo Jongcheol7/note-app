@@ -9,6 +9,9 @@ export function useNoteForm(initialData) {
   const [selectedColor, setSelectedColor] = useState(
     initialData?.color ?? "#FEF3C7"
   );
+  const [alarmDatetime, setAlarmDatetime] = useState(
+    initialData?.alarmDatetime
+  );
   const [isPublic, setIsPublic] = useState(initialData?.isPublic ?? false);
   const [isLike, setIsLike] = useState(initialData?.likes.length > 0 ?? false);
   const [isSecret, setIsSecret] = useState(initialData?.isSecret ?? false);
@@ -32,6 +35,8 @@ export function useNoteForm(initialData) {
     selectedColor,
     setSelectedColor,
     isPublic,
+    alarmDatetime,
+    setAlarmDatetime,
     togglePublic,
     isLike,
     toggleLike,

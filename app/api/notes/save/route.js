@@ -16,11 +16,16 @@ export async function POST(requset) {
       color,
       isSecret,
       isPublic,
+      alarmDatetime,
     } = await requset.json();
     if (!content || content.trim().length === 0) {
       console.error("내용이 없습니다.");
       return new Response("내용이 없습니다.", { status: 401 });
     }
+
+    // ✅ 여기가 핵심: 9시간 더해서 KST 시간 만들기
+    const parsedDate = new Date(alarmDatetime);
+    const kstDate = new Date(parsedDate.getTime() + 9 * 60 * 60 * 1000);
 
     // 사용자 정보 가져오기
     const session = await getServerSession(authOptions);
@@ -72,6 +77,7 @@ export async function POST(requset) {
         color,
         isSecret,
         isPublic,
+        alarmDatetime: kstDate,
         sortOrder: sortOrder ?? sortOrderValue,
       },
     });

@@ -37,6 +37,8 @@ export default function NoteDetail({ initialData, refetchNote }) {
     setSelectedCategoryNo,
     selectedColor,
     setSelectedColor,
+    alarmDatetime,
+    setAlarmDatetime,
     isPublic,
     togglePublic,
     isSecret,
@@ -155,8 +157,9 @@ export default function NoteDetail({ initialData, refetchNote }) {
       <CalenderPopup
         setShow={setShowCalendar}
         show={showCalendar}
-        selectedDate={initialData?.alarmDatetime}
+        alarmDatetime={alarmDatetime}
         noteNo={noteNo}
+        setAlarmDatetime={setAlarmDatetime}
       />
 
       {buttonAction && !initialData?.delDatetime && (
@@ -305,6 +308,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
                       color: selectedColor,
                       isSecret,
                       isPublic,
+                      alarmDatetime,
                     },
                     {
                       onSuccess: () => {

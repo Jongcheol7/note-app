@@ -5,10 +5,17 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useAlarmMutation } from "../hooks/useAlarmMutation";
 import { useState } from "react";
+import { ko } from "date-fns/locale";
 
-export default function CalenderPopup({ show, setShow, selectedDate, noteNo }) {
+export default function CalenderPopup({
+  show,
+  setShow,
+  alarmDatetime,
+  noteNo,
+  setAlarmDatetime,
+}) {
   const { mutate, isPending } = useAlarmMutation();
-  const [newDate, setNewDate] = useState(selectedDate ?? new Date());
+  const [newDate, setNewDate] = useState(alarmDatetime ?? new Date());
 
   return (
     <>
@@ -28,7 +35,7 @@ export default function CalenderPopup({ show, setShow, selectedDate, noteNo }) {
 
             <LocalizationProvider
               dateAdapter={AdapterDateFns}
-              //adapterLocale={koKR}
+              adapterLocale={ko}
             >
               <DateTimePicker
                 value={new Date(newDate)}
@@ -49,8 +56,20 @@ export default function CalenderPopup({ show, setShow, selectedDate, noteNo }) {
               className="mt-4 w-full py-2 text-sm font-medium rounded bg-blue-500 hover:bg-blue-600 text-white transition"
               disabled={isPending}
               onClick={() => {
-                mutate({ date: newDate, no: noteNo });
-                setShow(false);
+                if (!noteNo) {
+                  //새글 작성시 부모로 데이터보내고 저장시 한번에 저장
+                  setAlarmDatetime(newDate);
+                  setShow(false);
+                } else {
+                  //수정글일때
+                  mutate(
+                    { date: newDate, no: noteNo },
+                    {
+                      onSuccess: () => setShow(false),
+                      onError: () => alert("날짜 설정에 실패했습니다."),
+                    }
+                  );
+                }
               }}
             >
               {isPending ? "저장중" : "확인"}
