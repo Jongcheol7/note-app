@@ -24,8 +24,12 @@ export async function POST(requset) {
     }
 
     // ✅ 여기가 핵심: 9시간 더해서 KST 시간 만들기
-    const parsedDate = new Date(alarmDatetime);
-    const kstDate = new Date(parsedDate.getTime() + 9 * 60 * 60 * 1000);
+    // ✅ 날짜가 유효한 경우만 Date 생성
+    let kstDate = null;
+    if (alarmDatetime && !isNaN(new Date(alarmDatetime))) {
+      const parsedDate = new Date(alarmDatetime);
+      kstDate = new Date(parsedDate.getTime() + 9 * 60 * 60 * 1000); // KST 보정
+    }
 
     // 사용자 정보 가져오기
     const session = await getServerSession(authOptions);
