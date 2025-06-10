@@ -19,7 +19,6 @@ export async function POST(requset) {
     return new Response("로그인된 유저가 아닙니다.", { status: 401 });
   }
   const userId = session.user.id;
-  console.log("공개설정 api 라우트 userId: ", userId);
   try {
     const note = await prisma.note.findUnique({
       where: { noteNo },
@@ -30,8 +29,6 @@ export async function POST(requset) {
       });
     }
 
-    console.log("공개설정 api 라우트 업데이트 쿼리 직전전: ", noteNo, isPublic);
-
     const updated = await prisma.note.update({
       where: { noteNo },
       data: { isPublic },
@@ -39,6 +36,6 @@ export async function POST(requset) {
     return new Response(JSON.stringify(updated), { status: 200 });
   } catch (err) {
     console.error("공개여부 변경에 실패했습니다. : ", err);
-    return new Response("공개여부부 변경에 실패했습니다.", { status: 500 });
+    return new Response("공개여부 변경에 실패했습니다.", { status: 500 });
   }
 }
