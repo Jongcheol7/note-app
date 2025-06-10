@@ -18,7 +18,7 @@ export default function PasswordPopup({ show, setShow }) {
   const handleConfirm = () => {
     const pw = pwRef.current.value || "";
     const pwChk = pwChkRef.current.value || "";
-    const currentPw = currentPwRef?.current.value || "";
+    const currentPw = currentPwRef?.current?.value || "";
     if (hasPw && !currentPw) {
       alert("현재 비밀번호를 입력해주세요.");
       return;

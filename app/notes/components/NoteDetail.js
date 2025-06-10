@@ -84,7 +84,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
       ];
       setCategories(converted);
     }
-  }, []);
+  }, [categoryData]);
 
   console.log("카테고리 !! : ", categories);
 
