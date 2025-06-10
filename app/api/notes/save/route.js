@@ -41,16 +41,27 @@ export async function POST(requset) {
 
     // 수정일때 !!
     if (noteNo) {
+      const updateData = {
+        title: title || "",
+        content,
+        plainText,
+        modDatetime: new Date(),
+        // userId는 업데이트할 필요가 없으므로 이 라인을 삭제합니다.
+      };
+
+      // categoryNo가 유효한 값일 때만 categoryNo 외래 키를 업데이트합니다.
+      if (categoryNo !== null && categoryNo !== undefined) {
+        // categoryNo가 유효한 값일 경우, 해당 카테고리 번호로 업데이트합니다.
+        updateData.categoryNo = categoryNo;
+      } else {
+        // categoryNo가 null 또는 undefined인 경우, categoryNo 외래 키를 null로 설정합니다.
+        // 이 부분은 Note 스키마의 categoryNo 필드가 Int? 로 Optional하기 때문에 가능합니다.
+        updateData.categoryNo = null;
+      }
+
       const updated = await prisma.note.update({
         where: { noteNo },
-        data: {
-          user: { connect: { id: userId } },
-          title: title || "",
-          content,
-          plainText,
-          category: { connect: { categoryNo: categoryNo } },
-          modDatetime: new Date(),
-        },
+        data: updateData,
       });
       return new Response(JSON.stringify(updated), { status: 200 });
     }

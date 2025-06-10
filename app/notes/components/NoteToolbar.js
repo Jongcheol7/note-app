@@ -10,6 +10,7 @@ import {
   Pause,
   Check,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 
 export default function NoteToolbar({ editor }) {
@@ -20,6 +21,9 @@ export default function NoteToolbar({ editor }) {
   const [recordTime, setRecordTime] = useState(0);
   const intervalRef = useRef(null);
   const recorderRef = useRef(null);
+
+  const { data: session, status } = useSession();
+  //console.log("session email : ", session?.user.email);
 
   // 녹음 시작시 감지해서 실행됨
   useEffect(() => {
@@ -79,9 +83,43 @@ export default function NoteToolbar({ editor }) {
   };
 
   // 사진 파일 첨부 메서드
+  const MAX_IMAGES = session?.user.email === process.env.ADMIN_EMAIL ? 10 : 0; //글당 최대 이미지 갯수 제한 2개
+  const MAX_FILE_SIZE_MB = 2; // 개별 이미지 최대 허용 파일 크기 (MB) - 이 용량을 넘으면 경고 후 처리 중단
+  const COMPRESS_QUALITY = 0.7; // 압축 품질 (0.0 ~ 1.0, 0.7 정도면 웹에서 괜찮은 품질)
+  const MAX_IMAGE_WIDTH = 1200; // 최대 이미지 너비 (픽셀) - 이 너비를 넘으면 리사이징
   const handleImageSelect = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    //현재 에디터 내 이미지 개수 확인
+    // Tiptap 에디터의 getHTML()은 내부적으로 모든 이미지 태그를 포함합니다.
+    const currentImageCount = (
+      editor.getHTML().match(/<img[^>]*src="data:image\/[^;]*;base64[^>]*>/g) ||
+      []
+    ).length;
+    // 위 정규식은 src가 base64로 시작하는 img 태그만 카운트합니다.
+
+    // 1. 파일 크기 검사 (MB 단위)
+    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      alert(
+        `관리자를 제외하고 개별 첨부 가능한 사진 크기는 최대 ${MAX_FILE_SIZE_MB}MB 입니다.`
+      );
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      return;
+    }
+
+    console.log("currentImgCnt : ", currentImageCount);
+    if (currentImageCount > MAX_IMAGES) {
+      alert(
+        `관리자를 제외하고 사진은 최대 ${MAX_IMAGES}개까지만 첨부할 수 있습니다.`
+      );
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      return;
+    }
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -170,7 +208,13 @@ export default function NoteToolbar({ editor }) {
         <button onClick={() => fileInputRef.current?.click()}>
           <ImagePlus className="w-5 h-5" />
         </button>
-        <button onClick={() => setIsRecordClick(true)}>
+        <button
+          onClick={() => {
+            alert("관리자만 사용가능");
+            return false;
+            //setIsRecordClick(true);
+          }}
+        >
           <Mic className="w-5 h-5" />
         </button>
         <button onClick={() => editor.chain().focus().toggleBulletList().run()}>
