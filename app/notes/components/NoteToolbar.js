@@ -88,7 +88,7 @@ export default function NoteToolbar({ editor }) {
   const COMPRESS_QUALITY = 0.7; // 압축 품질 (0.0 ~ 1.0, 0.7 정도면 웹에서 괜찮은 품질)
   const MAX_IMAGE_WIDTH = 1200; // 최대 이미지 너비 (픽셀) - 이 너비를 넘으면 리사이징
   const handleImageSelect = (e) => {
-    if (session?.user.email !== process.env.ADMIN_EMAIL) {
+    if (session?.user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
       alert("관리자를 제외하고 사진을 첨부할수 없습니다.");
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
