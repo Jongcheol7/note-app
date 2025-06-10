@@ -22,11 +22,18 @@ export async function GET(req) {
   const userId = session.user.id;
 
   try {
+    // where 조건을 동적으로 생성
+    const whereCondition = {
+      noteNo,
+    };
+
+    if (menuFrom !== "community") {
+      // 커뮤니티가 아닐 때만 userId 조건을 추가합니다.
+      whereCondition.userId = userId;
+    }
+
     const note = await prisma.note.findFirst({
-      where: {
-        userId,
-        noteNo,
-      },
+      where: whereCondition,
       include: {
         _count: {
           select: { likes: true },
