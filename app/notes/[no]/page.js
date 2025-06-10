@@ -2,9 +2,11 @@
 import { useParams, useSearchParams } from "next/navigation";
 import { useNoteDetail } from "../hooks/useNoteDetail";
 import NoteDetail from "../components/NoteDetail";
+import { useFromStore } from "@/store/useFromStore";
 
 export default function NoteDetailPage() {
   const { no } = useParams();
+  const { menuFrom } = useFromStore();
   console.log("노트상세페이지 id :", no);
   const {
     data,
@@ -12,7 +14,7 @@ export default function NoteDetailPage() {
     isError,
     error,
     refetch: refetchNote,
-  } = useNoteDetail(no);
+  } = useNoteDetail(no, menuFrom);
   if (isError) {
     return <p>{error?.message ?? "알 수 없는 오류"}</p>;
   }

@@ -77,7 +77,7 @@ export async function POST(requset) {
         title: title || "", // 제목 없을 수도 있으니 기본값 빈 문자열
         content,
         plainText,
-        categoryNo,
+        categoryNo: categoryNo || null,
         color,
         isSecret,
         isPublic,

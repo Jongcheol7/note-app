@@ -8,6 +8,10 @@ export async function GET(req) {
   const paths = url.pathname.split("/");
   const noteNo = Number(paths[paths.length - 1]);
 
+  //쿼리 파라미터 가져오기
+  const { searchParams } = new URL(req.url);
+  const menuFrom = searchParams.get("menuFrom");
+
   if (!noteNo) {
     return new Response("글 번호가 없습니다.", { status: 401 });
   }
@@ -35,7 +39,7 @@ export async function GET(req) {
     });
 
     //유저가 다르면 접근 차단
-    if (!note || note.userId !== userId) {
+    if (menuFrom !== "community" && (!note || note.userId !== userId)) {
       return new Response("노트를 찾을수 없거나 조회 권한이 없습니다.", {
         status: 404,
       });
