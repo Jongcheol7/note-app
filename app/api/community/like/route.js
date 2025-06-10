@@ -6,6 +6,8 @@ export async function POST(request) {
   const isLike = req.isLike;
   const noteNo = req.noteNo;
 
+  console.log("좋아요 api 라우투 진입 : ", isLike, noteNo);
+
   if (!noteNo) {
     console.error("노트 번호가 없습니다.");
     return new Response("노트 번호가 없습니다.", { status: 400 });
@@ -20,6 +22,7 @@ export async function POST(request) {
   try {
     let result;
     if (isLike) {
+      console.log("좋아요 생성 쿼리 수행 전!");
       result = await prisma.like.create({
         data: { noteNo, userId },
       });

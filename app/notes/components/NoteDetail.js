@@ -84,9 +84,9 @@ export default function NoteDetail({ initialData, refetchNote }) {
       ];
       setCategories(converted);
     }
-  }, [categoryData]);
+  }, []);
 
-  console.log("카테고리 ! : ", categories);
+  console.log("카테고리 !! : ", categories);
 
   // 외부 클릭시 ... 토글 비활성화 하자.
   useEffect(() => {
