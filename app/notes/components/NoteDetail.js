@@ -172,13 +172,17 @@ export default function NoteDetail({ initialData, refetchNote }) {
           ref={buttonRef}
         >
           {/* 알림 설정 */}
-          <button
-            onClick={() => setShowCalendar((prev) => !prev)}
-            className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
-          >
-            <CalendarDays className="w-5 h-5 text-blue-500" />
-            <span className="text-gray-800 dark:text-gray-200">알림 설정</span>
-          </button>
+          {menu !== "community" && (
+            <button
+              onClick={() => setShowCalendar((prev) => !prev)}
+              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
+            >
+              <CalendarDays className="w-5 h-5 text-blue-500" />
+              <span className="text-gray-800 dark:text-gray-200">
+                알림 설정
+              </span>
+            </button>
+          )}
 
           {/* 비밀글 */}
           {menu !== "community" && (
