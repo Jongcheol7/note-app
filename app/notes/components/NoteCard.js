@@ -1,17 +1,17 @@
 "use client";
-import DOMPurify from "dompurify"; // 🛡️ XSS 공격을 막기 위한 라이브러리
+import DOMPurify from "dompurify";
 import { useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
 import { useState } from "react";
 
 export default function NoteCard({ note }) {
-  const safeHTML = DOMPurify.sanitize(note.content);
+  const safeHTML = DOMPurify.sanitize(note.content); //악성스크립트제거
   const formattedDate = new Date(note.inputDatetime).toLocaleDateString();
   const router = useRouter();
 
   return (
     <div
-      className="p-4 rounded-xl shadow-md hover:shadow-lg transition-all break-words"
+      className="p-4 rounded-xl shadow-md hover:shadow-2xl transition-all break-words flex flex-col justify-between"
       onClick={() => {
         router.push(`/notes/${note.noteNo}`);
       }}
@@ -20,14 +20,7 @@ export default function NoteCard({ note }) {
       }}
     >
       <div
-        className="prose prose-sm max-w-none overflow-hidden line-clamp-none relative"
-        style={{
-          display: "-webkit-box",
-          WebkitLineClamp: 10, // ✅ 원하는 줄 수로 제한
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden",
-          maxHeight: "300px", // ✅ 최대 높이 제한
-        }}
+        className="max-w-none overflow-hidden h-[230px] relative"
         dangerouslySetInnerHTML={{ __html: safeHTML }}
       />
       <div className="flex justify-between text-xs text-gray-500 text-right mt-2">
@@ -39,7 +32,6 @@ export default function NoteCard({ note }) {
           />
           <span>{note._count.likes}</span>
         </div>
-        {/* <span className="text-xs text-blue-600">...더보기</span> */}
         <span>{formattedDate}</span>
       </div>
     </div>

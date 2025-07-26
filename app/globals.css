@@ -128,3 +128,12 @@ html, body {
 .scrollbar-none::-webkit-scrollbar {
   display: none; /* Chrome, Safari */
 }
+
+/* 흔들림 방지용 */
+html {
+  overflow-y: scroll;
+}
+
+body {
+  overflow-x: hidden;
+}

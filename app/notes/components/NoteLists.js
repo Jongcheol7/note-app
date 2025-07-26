@@ -1,95 +1,82 @@
 "use client";
-import { useNoteLists } from "@app/notes/hooks/useNoteLists";
-import Link from "next/link";
-import NoteCard from "./NoteCard";
-import Masonry from "react-masonry-css";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useSearchStore } from "@/store/useSearchStore";
+import { useQueryClient } from "@tanstack/react-query";
+import NoteCard from "./NoteCard";
+import Link from "next/link";
+import { useNoteLists } from "../hooks/useNoteLists";
 
 export default function NoteLists() {
-  const { data, error, isError } = useNoteLists();
-  if (isError) {
-    console.error("❌ 에러 발생:", error); // 여기에 에러 객체 구조 찍힘
-  }
-  console.log("data ddd : ", data);
-  //const observerRef = useRef(null); //div태그를 연결해줄 ref객체
+  const observerRef = useRef(null);
+  const queryClient = useQueryClient();
+  const { keyword } = useSearchStore();
 
-  // if (isLoading) return <p>메모를 불러오는 중입니다...</p>;
-  // if (isError) {
-  //   const message = error?.response?.data ?? "알 수 없는 오류";
+  const {
+    data,
+    error,
+    isError,
+    isFetching,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+    refetch,
+  } = useNoteLists();
 
-  //   return <p>{message}</p>;
-  // }
-  // if (!data || data.pages[0].notes.length === 0)
-  //   return (
-  //     <div>
-  //       <p>아직 작성된 메모가 없습니다.</p>
-  //       <AddButton />
-  //     </div>
-  //   );
-
-  const breakpointColumnsObj = {
-    default: 3,
-    1024: 3,
-    640: 2,
-  };
-
-  return (
-    <div className="overflow-y-auto scrollbar-none">
-      <Masonry
-        breakpointCols={breakpointColumnsObj} // 👈 반응형 컬럼 설정 적용
-        className="flex gap-4" // Masonry 외부 스타일 (간격 등)
-        columnClassName="space-y-4" // Masonry 내부 컬럼 스타일 (카드 사이 간격)
-      >
-        {/* {data.map((note) => (
-          // 📌 노트 하나하나를 카드 형태로 렌더링
-          <NoteCard key={note.noteNo} note={note} />
-        ))} */}
-        {data.pages
-          .flatMap((page) => page.notes)
-          .map((note) => (
-            <NoteCard key={note.noteNo} note={note} />
-          ))}
-      </Masonry>
-      {/* {isFetchingNextPage && <p>📦 다음 메모 불러오는 중...</p>}  */}
-
-      <AddButton />
-    </div>
-  );
-}
-
-export function AddButton() {
-  return (
-    <Link
-      href={"/notes/write"}
-      className="fixed right-4 bottom-4 h-12 w-12 z-40 rounded-xl flex items-center justify-center bg-gray-800 text-white font-bold text-2xl shadow-md"
-    >
-      +
-    </Link>
-  );
-}
-
-/*
-  커서방식으로 전환하기 위해 주석처리
+  // ✅ keyword가 바뀌면 기존 noteLists 데이터를 리셋
   useEffect(() => {
-    //다음 페이지가 없거나 이미 불러들이는 중이라면 감지할 필요 없음.
+    queryClient.removeQueries({ queryKey: ["noteLists"] });
+    refetch(); // 새로운 검색어로 refetch
+  }, [keyword, queryClient, refetch]);
+
+  const allNotes = useMemo(() => {
+    return data?.pages.flatMap((page) => page.notes) ?? [];
+  }, [data]);
+
+  useEffect(() => {
     if (!hasNextPage || isFetchingNextPage) return;
-    //IntersectionObserver 는 화면에 어떤 요소가 보이는지 감지하는 기능
+
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
           fetchNextPage();
         }
       },
-      { threshold: 1 } //100% 화면에 보여야 작동하도록함(0~1값)
+      { threshold: 1.0 }
     );
-    if (observerRef.current) {
-      observer.observe(observerRef.current); // ✅ 관찰 시작!
-    }
+
+    const target = observerRef.current;
+    if (target) observer.observe(target);
     return () => {
-      if (observerRef.current) {
-        observer.unobserve(observerRef.current); // ✅ cleanup: 관찰 해제
-      }
+      if (target) observer.unobserve(target);
+      observer.disconnect();
     };
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage, keyword]);
-  */
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  if (isFetching && !isFetchingNextPage) return <p>메모를 불러오는 중...</p>;
+  if (isError) {
+    const message = error?.response?.data ?? "알 수 없는 오류";
+    return <p>{message}</p>;
+  }
+
+  return (
+    <div className="overflow-y-auto scrollbar-none grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-20">
+      {allNotes.map((note) => (
+        <NoteCard key={note.noteNo} note={note} />
+      ))}
+      <div ref={observerRef} className="h-20" />
+      {isFetchingNextPage && <p>📦 다음 메모 불러오는 중...</p>}
+      <AddButton />
+    </div>
+  );
+}
+
+function AddButton() {
+  return (
+    <Link
+      href="/notes/write"
+      className="fixed right-4 bottom-4 h-12 w-12 z-40 rounded-xl flex items-center justify-center bg-gray-800 text-white text-2xl font-bold shadow-md"
+    >
+      +
+    </Link>
+  );
+}

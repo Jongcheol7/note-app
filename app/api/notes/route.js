@@ -2,32 +2,25 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@app/api/auth/[...nextauth]/route";
+import { NextResponse } from "next/server";
 
 export async function GET(request) {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user) {
-    return new Response("로그인을 해야 메모를 불러올수 있습니다.", {
-      status: 401,
-    });
+    console.error("로그인 정보가 없습니다.");
+    return NextResponse.json(
+      { error: "로그인 정보가 없습니다." },
+      { status: 500 }
+    );
   }
   const userId = session.user.id;
 
-  // 무한스크롤로 변경후 페이지 번호를 추출하자(기본 1로 시작)
   const { searchParams } = new URL(request.url);
-  //const page = parseInt(searchParams.get("page") || "1");
   const cursor = searchParams.get("cursor");
   const limit = Number(searchParams.get("limit"));
   const keyword = searchParams.get("keyword").trim() || "";
   const menuFrom = searchParams.get("menuFrom").trim() || "";
-
-  console.log("cursor ddd : ", cursor);
-  console.log("limit ddd : ", limit);
-  console.log("keyword ddd : ", keyword);
-  console.log("menuFrom ddd : ", menuFrom);
-
-  //const pageSize = 10; //한 페이지에 몇개의 글을 보여줄지
-  //const skip = (page - 1) * pageSize; //앞에서 몇개의 글을 건너뛸지
 
   const whereCondition = {
     userId,
@@ -62,22 +55,12 @@ export async function GET(request) {
     });
     const nextCursor = notes.length > 0 ? notes[notes.length - 1].noteNo : null;
 
-    // 전체 개수 가져와서 다음 페이지 여부 확인
-    // const total = await prisma.note.count({
-    //   where: whereCondition,
-    // });
-    // const hasNextPage = page * pageSize < total;
-
-    console.log("조회결과 : ", notes);
-
     return Response.json({ notes, nextCursor });
   } catch (err) {
-    return new Response(
-      JSON.stringify({ message: "노트 조회에 실패했습니다" }),
-      {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      }
+    console.error("노트 조회에 실패했습니다.");
+    return NextResponse.json(
+      { error: "노트 조회에 실패했습니다." },
+      { status: 500 }
     );
   }
 }
