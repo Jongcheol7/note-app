@@ -24,7 +24,9 @@ export const authOptions = {
     // 그럼 프론트에서 session 이라는 것으로 쉽게 사용자 정보에 접근가능
     async session({ session, user }) {
       //session.user.id = token.sub; db 연결전에는 토큰에서 가져옴.
-      session.user.id = user.id;
+      if (user && session?.user) {
+        session.user.id = user.id;
+      }
       return session;
     },
   },
