@@ -11,6 +11,9 @@ import CalenderPopup from "@/app/calendar/components/CalenderPopup";
 import { useNoteFormStore } from "@/store/useNoteFormStore";
 import { HtmlToPlainText } from "@/components/common/HtmlToPlainText";
 import { useRouter } from "next/navigation";
+import imageCompression from "browser-image-compression";
+import axios from "axios";
+import { toast } from "sonner";
 
 export default function NoteToggle1({
   setButtonAction,
@@ -18,6 +21,7 @@ export default function NoteToggle1({
   refetchNote,
   editor,
 }) {
+  console.log("refetchNote : ", refetchNote);
   const [showColorPopup, setShowColorPopup] = useState(false);
   const [showCalendarPopup, setShowCalendarPopup] = useState(false);
 
@@ -192,7 +196,64 @@ export default function NoteToggle1({
           <button
             className="text-sm text-blue-600 hover:font-bold"
             disabled={isSaving}
-            onClick={() => {
+            onClick={async () => {
+              const html = editor.getHTML();
+
+              console.log("html: ", html);
+
+              //base64 형태인 img 를 골라내자.
+              const matches = [
+                ...html.matchAll(/<img[^>]+src="(data:image\/[^"]+)"[^>]*>/g),
+              ];
+
+              let uploadHTML = html;
+
+              for (let i = 0; i < matches.length; i++) {
+                const fullTag = matches[i][0]; // 전체 <img ...> 태그
+                const base64 = matches[i][1]; // src 안의 base64
+
+                // base64 → blob -> File 변환
+                const res = await fetch(base64);
+                const blob = await res.blob();
+                const file = new File([blob], `image${i}.jpeg`, {
+                  type: blob.type,
+                });
+
+                // 압축
+                const compressedFile = await imageCompression(file, {
+                  maxSizeMB: 0.7,
+                  maxWidthOrHeight: 1024,
+                  useWebWorker: true,
+                });
+
+                // presigned URL 요청
+                const { data } = await axios.post("/api/notes/upload/image", {
+                  fileType: compressedFile.type,
+                });
+
+                if (data.error) {
+                  throw new Error("Presigned URL 생성 실패");
+                }
+
+                const { uploadUrl, fileUrl } = data;
+
+                //스타일 속성 유지하기
+                const styleMatch = fullTag.match(/style="([^"]*)"/);
+                const styleAttr = styleMatch ? ` style="${styleMatch[1]}"` : "";
+
+                // S3에 업로드
+                await axios.put(uploadUrl, compressedFile, {
+                  headers: {
+                    "Content-Type": compressedFile.type,
+                  },
+                });
+
+                // base64 태그 → 실제 S3 URL로 바꾸기 (해당 <img> 전체 태그 교체)
+                const s3ImgTag = `<img src="${fileUrl}"${styleAttr} />`;
+                uploadHTML = uploadHTML.replace(fullTag, s3ImgTag);
+              }
+
+              //8. 노트 저장
               saveMutate(
                 {
                   noteNo,
@@ -200,8 +261,8 @@ export default function NoteToggle1({
                   categoryNo:
                     selectedCategoryNo === -1 ? null : selectedCategoryNo,
                   sortOrder: initialData?.sortOrder ?? null,
-                  content: editor.getHTML(),
-                  plainText: HtmlToPlainText(editor.getHTML()),
+                  content: uploadHTML,
+                  plainText: HtmlToPlainText(uploadHTML),
                   color: selectedColor,
                   isSecret,
                   isPublic,
@@ -209,9 +270,12 @@ export default function NoteToggle1({
                 },
                 {
                   onSuccess: () => {
-                    alert("✅ 저장 완료!");
+                    toast.success("저장 완료");
+                    console.log("저장완료");
                     refetchNote();
+                    console.log("리패치");
                     router.push("/");
+                    console.log("홈으로이동");
                   },
                 }
               );
@@ -227,7 +291,7 @@ export default function NoteToggle1({
                 { noteNo },
                 {
                   onSuccess: () => {
-                    alert("삭제 완료!");
+                    toast.success("삭제 완료");
                     refetchNote();
                     router.push("/");
                   },

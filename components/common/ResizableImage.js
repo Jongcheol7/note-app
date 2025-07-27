@@ -1,5 +1,3 @@
-// components/common/ResizableImage.js
-
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import ResizableImageComponent from "./ResizableImageComponent";
@@ -26,10 +24,16 @@ export const ResizableImage = Node.create({
         tag: "img[src]",
         getAttrs: (dom) => {
           const element = dom;
+
+          // style 속성 문자열 직접 추출해서 정규식으로 파싱
+          const style = element.getAttribute("style") || "";
+          const widthMatch = style.match(/width:\s*([^;]+);?/);
+          const heightMatch = style.match(/height:\s*([^;]+);?/);
+
           return {
             src: element.getAttribute("src"),
-            width: element.style.width || "auto",
-            height: element.style.height || "auto",
+            width: widthMatch ? widthMatch[1] : "auto",
+            height: heightMatch ? heightMatch[1] : "auto",
           };
         },
       },
@@ -38,15 +42,12 @@ export const ResizableImage = Node.create({
 
   renderHTML({ HTMLAttributes }) {
     return [
-      "div",
-      mergeAttributes(HTMLAttributes, { "data-type": "resizable-image" }),
-      [
-        "img",
-        {
-          src: HTMLAttributes.src,
-          style: `width: ${HTMLAttributes.width}; height: ${HTMLAttributes.height};`,
-        },
-      ],
+      "img",
+      {
+        src: HTMLAttributes.src,
+        style: `width: ${HTMLAttributes.width}; height: ${HTMLAttributes.height};`,
+        "data-type": "resizable-image",
+      },
     ];
   },
 

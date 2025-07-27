@@ -2,7 +2,6 @@
 import DOMPurify from "dompurify";
 import { useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
-import { useState } from "react";
 
 export default function NoteCard({ note }) {
   const safeHTML = DOMPurify.sanitize(note.content); //악성스크립트제거

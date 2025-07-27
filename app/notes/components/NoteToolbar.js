@@ -1,5 +1,6 @@
 "use client";
 
+import { ResizeImageIfNeeded } from "@/components/common/ResizeImageIfNeeded";
 import {
   Bold,
   List,
@@ -71,12 +72,17 @@ export default function NoteToolbar({ editor }) {
       const blob = new Blob([e.data], { type: "audio/webm" });
       const audioUrl = URL.createObjectURL(blob);
 
-      editor
-        .chain()
-        .focus()
-        .insertContent(`<div data-audio="${audioUrl}"></div>`)
-        // .insertContent(`<audio controls src="${audioUrl}"></audio>`)
-        .run();
+      // editor
+      //   .chain()
+      //   .focus()
+      //   .insertContent(`<div data-audio="${audioUrl}"></div>`)
+      //   .run();
+      editor.commands.insertContent({
+        type: "audioBlock",
+        attrs: {
+          src: audioUrl,
+        },
+      });
     };
 
     recorderRef.current.stop(); // 여기에 stop 있어야 함
@@ -85,63 +91,56 @@ export default function NoteToolbar({ editor }) {
   // 사진 파일 첨부 메서드
   const MAX_IMAGES = 20; //글당 최대 이미지 갯수 제한 2개
   const MAX_FILE_SIZE_MB = 2; // 개별 이미지 최대 허용 파일 크기 (MB) - 이 용량을 넘으면 경고 후 처리 중단
-  const COMPRESS_QUALITY = 0.7; // 압축 품질 (0.0 ~ 1.0, 0.7 정도면 웹에서 괜찮은 품질)
   const MAX_IMAGE_WIDTH = 1200; // 최대 이미지 너비 (픽셀) - 이 너비를 넘으면 리사이징
   const handleImageSelect = (e) => {
-    if (session?.user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
-      alert("관리자를 제외하고 사진을 첨부할수 없습니다.");
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-      return;
-    }
     const file = e.target.files?.[0];
     if (!file) return;
 
-    //현재 에디터 내 이미지 개수 확인
-    // Tiptap 에디터의 getHTML()은 내부적으로 모든 이미지 태그를 포함합니다.
+    if (session?.user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
+      alert("관리자만 이미지를 업로드할 수 있습니다.");
+      fileInputRef.current.value = "";
+      return;
+    }
+
+    // 1. 파일 크기 검사
+    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      alert(`이미지 크기는 ${MAX_FILE_SIZE_MB}MB 이하만 가능합니다.`);
+      fileInputRef.current.value = "";
+      return;
+    }
+
+    // 2. 현재 에디터에 삽입된 base64 이미지 개수 세기
     const currentImageCount = (
       editor.getHTML().match(/<img[^>]*src="data:image\/[^;]*;base64[^>]*>/g) ||
       []
     ).length;
-    // 위 정규식은 src가 base64로 시작하는 img 태그만 카운트합니다.
 
-    // 1. 파일 크기 검사 (MB 단위)
-    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-      alert(
-        `관리자를 제외하고 개별 첨부 가능한 사진 크기는 최대 ${MAX_FILE_SIZE_MB}MB 입니다.`
-      );
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+    if (currentImageCount >= MAX_IMAGES) {
+      alert(`이미지는 최대 ${MAX_IMAGES}개까지만 첨부할 수 있습니다.`);
+      fileInputRef.current.value = "";
       return;
     }
 
-    console.log("currentImgCnt : ", currentImageCount);
-    if (currentImageCount > MAX_IMAGES) {
-      alert(
-        `관리자를 제외하고 사진은 최대 ${MAX_IMAGES}개까지만 첨부할 수 있습니다.`
-      );
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-      return;
-    }
-
+    // 3. FileReader로 base64 변환 → 에디터 삽입
     const reader = new FileReader();
-    reader.onload = () => {
+
+    reader.onload = async () => {
       const base64 = reader.result;
 
+      // ⛔ 너무 큰 경우 → 리사이징
+      const resizedBase64 = await ResizeImageIfNeeded(base64, MAX_IMAGE_WIDTH);
+
+      // ✅ 에디터에 base64 이미지 삽입
       editor.commands.insertContent({
         type: "resizableImage",
         attrs: {
-          src: base64,
-          width: "300px", // 원하는 기본 사이즈
-          height: "auto",
+          src: resizedBase64,
         },
       });
     };
+
     reader.readAsDataURL(file);
+    console.log("editor.getHTML() : ", editor.getHTML());
   };
 
   return (

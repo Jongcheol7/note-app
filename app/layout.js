@@ -4,6 +4,7 @@ import Header from "@components/common/Header";
 import ReactQueryProvider from "@components/common/ReactQueryProvider";
 import SessionWrapper from "@components/common/SessionProvider";
 import { useColorStore } from "@/store/useColorStore";
+import { Toaster } from "sonner";
 
 export default function RootLayout({ children }) {
   const { color } = useColorStore();
@@ -24,6 +25,7 @@ export default function RootLayout({ children }) {
           <ReactQueryProvider>
             <Header />
             {children}
+            <Toaster position="bottom-center" richColors />
           </ReactQueryProvider>
         </SessionWrapper>
       </body>
