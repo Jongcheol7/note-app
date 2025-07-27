@@ -5,11 +5,15 @@ import { useQueryClient } from "@tanstack/react-query";
 import NoteCard from "./NoteCard";
 import Link from "next/link";
 import { useNoteLists } from "../hooks/useNoteLists";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function NoteLists() {
   const observerRef = useRef(null);
   const queryClient = useQueryClient();
   const { keyword } = useSearchStore();
+  const router = useRouter();
 
   const {
     data,
@@ -54,8 +58,16 @@ export default function NoteLists() {
 
   if (isFetching && !isFetchingNextPage) return <p>메모를 불러오는 중...</p>;
   if (isError) {
-    const message = error?.response?.data ?? "알 수 없는 오류";
-    return <p>{message}</p>;
+    console.log("error :", error);
+    const status = error?.response?.status;
+    const message = error?.response?.data?.error;
+
+    if (status === 401) {
+      toast.error("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
+      signIn("google");
+    } else {
+      toast.error(`에러 발생: ${message}`);
+    }
   }
 
   return (

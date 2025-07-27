@@ -7,11 +7,13 @@ import { useRouter } from "next/navigation";
 import PasswordCheckPopup from "@/app/settings/components/PasswordCheckPopup";
 import NavMain from "./NavMain";
 import { Input } from "../ui/input";
+import { useFromStore } from "@/store/useFromStore";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showPwPopup, setShowPwPopup] = useState(false);
   const { keyword, setKeyword } = useSearchStore();
+  const { setMenuFrom } = useFromStore();
 
   const router = useRouter();
 

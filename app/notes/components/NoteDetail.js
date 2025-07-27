@@ -10,6 +10,7 @@ import CategoryPopup from "@/app/category/components/CategoryPopup";
 import { EllipsisIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useNoteFormStore } from "@/store/useNoteFormStore";
+import { useColorStore } from "@/store/useColorStore";
 
 export default function NoteDetail({ initialData, refetchNote }) {
   console.log("이니셜데이터 : ", initialData);
@@ -17,6 +18,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
   const { data: categoryData, refetch } = useCategoryLists();
   const [buttonAction, setButtonAction] = useState(false);
+  const { setColor } = useColorStore();
 
   const {
     noteNo,
@@ -44,6 +46,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
       setTitle(initialData.title ?? "");
       setSelectedColor(initialData.color ?? "#FEF3C7");
       setSelectedCategoryNo(initialData.categoryNo ?? -1);
+      setColor(initialData.color ?? "#FEF3C7");
     }
     if (categoryData) {
       const newCats = categoryData.map((cat) => ({

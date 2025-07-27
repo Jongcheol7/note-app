@@ -11,7 +11,7 @@ export async function GET(request) {
     console.error("로그인 정보가 없습니다.");
     return NextResponse.json(
       { error: "로그인 정보가 없습니다." },
-      { status: 500 }
+      { status: 401 }
     );
   }
   const userId = session.user.id;
