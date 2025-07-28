@@ -5,9 +5,9 @@ import { Home } from "lucide-react";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useRouter } from "next/navigation";
 import { useFromStore } from "@/store/useFromStore";
-import PasswordCheckPopup from "@/app/(settings)/settings/components/PasswordCheckPopup";
 import NavMain from "./NavMain";
 import { Input } from "@/components/ui/input";
+import PasswordCheckPopup from "../settings/PasswordCheckPopup";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

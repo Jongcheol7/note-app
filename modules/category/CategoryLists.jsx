@@ -1,14 +1,15 @@
 "use client"; // ✅ Next.js에서 브라우저 전용 기능 (예: 드래그) 쓸 땐 꼭 필요!
 
+import { useCategoryDelete } from "@/hooks/category/useCategoryDelete";
+import { useCategoryLists } from "@/hooks/category/useCategoryLists";
+import { useCategoryReorder } from "@/hooks/category/useCategoryReorder";
 // ✅ 드래그 기능을 제공하는 라이브러리에서 필요한 요소 가져옴
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 
 // ✅ 서버나 DB에서 카테고리 리스트를 불러오는 커스텀 훅 (너가 만든거)
-import { useCategoryLists } from "../hooks/useCategoryLists";
-import { useCategoryDelete } from "../hooks/useCategoryDelete";
+
 import { useState } from "react";
 import CategoryPopup from "./CategoryPopup";
-import { useCategoryReorder } from "../hooks/useCategoryReorder";
 
 export default function CategoryLists() {
   // ✅ 카테고리 목록을 서버에서 불러오는 중인지 확인 + 불러온 데이터

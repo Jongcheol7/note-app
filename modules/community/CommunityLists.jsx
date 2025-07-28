@@ -1,9 +1,9 @@
 "use client";
 import Masonry from "react-masonry-css";
-import { useCommunityLists } from "../hooks/useCommunityLists";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useEffect, useRef } from "react";
-import NoteCard from "@/app/notes/components/NoteCard";
+import { useCommunityLists } from "@/hooks/community/useCommunityLists";
+import NoteCard from "../notes/NoteCard";
 
 export default function CommunityLists() {
   const {
