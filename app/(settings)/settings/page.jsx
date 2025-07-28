@@ -1,6 +1,6 @@
 "use client";
+import PasswordPopup from "@/modules/settings/PasswordPopup";
 import { useState } from "react";
-import PasswordPopup from "./components/PasswordPopup";
 
 export default function Page() {
   const [showPwPopup, setShowPwPopup] = useState(false);

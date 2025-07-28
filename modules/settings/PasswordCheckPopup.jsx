@@ -1,6 +1,6 @@
+import { useHasPw } from "@/hooks/settings/useHasPw";
+import { useVerifyPw } from "@/hooks/settings/useVerifyPw";
 import { useRef } from "react";
-import { useVerifyPw } from "../hooks/useVerifyPw";
-import { useHasPw } from "../hooks/useHasPw";
 
 export default function PasswordCheckPopup({ setShow, onSuccess }) {
   const { data: hasPw, isLoading } = useHasPw();

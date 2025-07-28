@@ -1,6 +1,6 @@
+import { useHasPw } from "@/hooks/settings/useHasPw";
+import { useSettingPwMutation } from "@/hooks/settings/useSettingPwMutation";
 import { useRef } from "react";
-import { useSettingPwMutation } from "../hooks/useSettingPwMutation";
-import { useHasPw } from "../hooks/useHasPw";
 
 export default function PasswordPopup({ show, setShow }) {
   const { data: hasPw } = useHasPw();
