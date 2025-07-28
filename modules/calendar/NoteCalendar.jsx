@@ -1,9 +1,10 @@
+"use client";
 import Calendar from "react-calendar";
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
-import { useMonthlyAlarms } from "../hooks/useMonthlyAlarms";
 import { ko } from "date-fns/locale";
+import { useMonthlyAlarms } from "@/hooks/calendar/useMonthlyAlarms";
 
 export default function NoteCalendar() {
   const [date, setDate] = useState(new Date());

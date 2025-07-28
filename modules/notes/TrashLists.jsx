@@ -1,8 +1,8 @@
 "use client";
 import Masonry from "react-masonry-css";
-import { useTrashLists } from "../hooks/useTrashLists";
-import NoteCard from "./NoteCard";
 import { useEffect, useRef } from "react";
+import { useTrashLists } from "@/hooks/notes/useTrashLists";
+import NoteCard from "./NoteCard";
 
 export default function TrashLists() {
   const {
