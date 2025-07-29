@@ -23,9 +23,9 @@ export default function Editor({ onEditorReady, content, menu }) {
       //Image,
       ResizableImage,
     ],
-    autofocus: true,
     content: "", // ❌ 초기화 때는 비우고 useEffect에서 setContent 사용
     editable: menu !== "community",
+    autofocus: false,
     onUpdate({ editor }) {
       const html = editor.getHTML();
       console.log("이미지 삭제 실행됨 : ", html);
