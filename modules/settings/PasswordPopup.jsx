@@ -1,15 +1,15 @@
 import { useHasPw } from "@/hooks/settings/useHasPw";
 import { useSettingPwMutation } from "@/hooks/settings/useSettingPwMutation";
 import { useRef } from "react";
+import { toast } from "sonner";
 
-export default function PasswordPopup({ show, setShow }) {
+export default function PasswordPopup({ setShow }) {
   const { data: hasPw } = useHasPw();
   console.log("hasPw ::::::: ", hasPw);
   const { mutate, isPending, isError, error } = useSettingPwMutation();
   const currentPwRef = useRef();
   const pwRef = useRef();
   const pwChkRef = useRef();
-  if (!show) return null;
 
   if (isError) {
     console.error("에러발생 : ", error);
@@ -20,21 +20,22 @@ export default function PasswordPopup({ show, setShow }) {
     const pwChk = pwChkRef.current.value || "";
     const currentPw = currentPwRef?.current?.value || "";
     if (hasPw && !currentPw) {
-      alert("현재 비밀번호를 입력해주세요.");
+      toast.error("현재 비밀번호를 입력해주세요.");
       return;
     }
     if (!pw || !pwChk) {
-      alert("비밀번호를 모두 입력해주세요.");
+      toast.error("비밀번호를 모두 입력해주세요.");
       return;
     }
     if (pw !== pwChk) {
-      alert("비밀번호가 일치하지 않습니다.");
+      toast.error("비밀번호가 일치하지 않습니다.");
       return;
     }
     mutate(
       { currentPw: currentPw, password: pw },
       {
         onSuccess: () => {
+          toast.success("비밀번호 설정 완료");
           setShow(false);
         },
       }
@@ -58,7 +59,7 @@ export default function PasswordPopup({ show, setShow }) {
         )}
         <div className="flex flex-col">
           <div className="flex flex-col">
-            <label className="text-sm font-medium mt-3">비밀번호</label>
+            <label className="text-sm font-bold mt-3">비밀번호</label>
             <input
               className="bg-gray-300 px-3 py-1 rounded-md"
               ref={pwRef}
@@ -67,7 +68,7 @@ export default function PasswordPopup({ show, setShow }) {
             />
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-medium mt-3">비밀번호 확인</label>
+            <label className="text-sm font-bold mt-3">비밀번호 확인</label>
             <input
               className="bg-gray-300 px-3 py-1 mb-3 rounded-md"
               ref={pwChkRef}

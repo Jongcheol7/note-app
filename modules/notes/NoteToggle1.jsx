@@ -92,6 +92,10 @@ export default function NoteToggle1({
       {menu !== "community" && (
         <button
           onClick={() => {
+            if (isPublic && !isSecret) {
+              toast.error("커뮤니티 등록을 해제하십시오.");
+              return false;
+            }
             if (!noteNo) {
               //새글일때는 저장할때 저장되도록 한다.
               setIsSecret(!isSecret);
@@ -171,6 +175,10 @@ export default function NoteToggle1({
         <button
           className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
           onClick={() => {
+            if (isSecret && !isPublic) {
+              toast.error("비밀글 설정을 해제하십시오.");
+              return false;
+            }
             if (!noteNo) {
               //새글일때는 저장할때 저장되도록 한다.
               setIsPublic(!isPublic);
