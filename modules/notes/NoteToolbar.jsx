@@ -96,11 +96,11 @@ export default function NoteToolbar({ editor }) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (session?.user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
-      alert("관리자만 이미지를 업로드할 수 있습니다.");
-      fileInputRef.current.value = "";
-      return;
-    }
+    //if (session?.user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
+    //  alert("관리자만 이미지를 업로드할 수 있습니다.");
+    //  fileInputRef.current.value = "";
+    //  return;
+    //}
 
     // 1. 파일 크기 검사
     if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {

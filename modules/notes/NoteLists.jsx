@@ -8,12 +8,16 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import NoteCard from "./NoteCard";
 import { useNoteLists } from "@/hooks/notes/useNoteLists";
+import { useFromStore } from "@/store/useFromStore";
 
 export default function NoteLists() {
   const observerRef = useRef(null);
   const queryClient = useQueryClient();
   const { keyword } = useSearchStore();
   const router = useRouter();
+
+  const { menuFrom } = useFromStore();
+  console.log("menufrom : ", menuFrom);
 
   const {
     data,
@@ -56,6 +60,10 @@ export default function NoteLists() {
     };
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  useEffect(() => {
+    refetch();
+  }, [menuFrom]);
+
   if (isFetching && !isFetchingNextPage) return <p>메모를 불러오는 중...</p>;
   if (isError) {
     console.log("error :", error);
@@ -71,7 +79,7 @@ export default function NoteLists() {
   }
 
   return (
-    <div className="overflow-y-auto scrollbar-none grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-20">
+    <div className="overflow-y-auto scrollbar-none grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-20">
       {allNotes.map((note) => (
         <NoteCard key={note.noteNo} note={note} />
       ))}

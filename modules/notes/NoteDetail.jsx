@@ -31,6 +31,9 @@ export default function NoteDetail({ initialData, refetchNote }) {
     setSelectedCategoryNo,
     selectedColor,
     setSelectedColor,
+    setIsPublic,
+    setIsLike,
+    setIsSecret,
     reset,
   } = useNoteFormStore();
 
@@ -47,6 +50,9 @@ export default function NoteDetail({ initialData, refetchNote }) {
       setSelectedColor(initialData.color ?? "#FEF3C7");
       setSelectedCategoryNo(initialData.categoryNo ?? -1);
       setColor(initialData.color ?? "#FEF3C7");
+      setIsPublic(initialData.isPublic ?? false);
+      setIsLike(initialData?._count.likes > 0 ?? false);
+      setIsSecret(initialData.isSecret ?? false);
     }
     if (categoryData) {
       const newCats = categoryData.map((cat) => ({
@@ -68,15 +74,17 @@ export default function NoteDetail({ initialData, refetchNote }) {
     setSelectedColor,
   ]);
 
+  console.log("initialData : ", initialData);
+
   return (
     <div
       className="relative flex flex-col h-[calc(100vh-150px)] px-2 rounded-md"
       style={bgStyle}
     >
       {/* 카테고리 및 토글버튼 */}
-      <div className="flex gap-3">
+      <div className="flex justify-between gap-3">
         <select
-          className="ml-auto w-auto max-w-[200px] px-2 py-1 rounded-md text-sm border-gray-400 border border-b"
+          className="max-w-[200px] px-2 py-1 rounded-md text-sm"
           style={bgStyle}
           disabled={menu === "community"}
           value={selectedCategoryNo}

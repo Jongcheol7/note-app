@@ -10,7 +10,7 @@ export const useNoteFormStore = create((set) => ({
   title: "",
   selectedColor: "#FEF3C7",
   alarmDatetime: null,
-  isPublic: true,
+  isPublic: false,
   isLike: false,
   isSecret: false,
 

@@ -42,8 +42,11 @@ export default function NavMain({ isMenuOpen, setIsMenuOpen, setShowPwPopup }) {
             </div>
           )}
           <Link
-            href={"/notes/trash"}
-            onClick={() => setIsMenuOpen(false)}
+            href={"/"}
+            onClick={() => {
+              setIsMenuOpen(false);
+              setMenuFrom("trash");
+            }}
             className="flex gap-1 w-fit hover:text-blue-800 transition duration-300"
           >
             <Trash2 />
@@ -73,7 +76,7 @@ export default function NavMain({ isMenuOpen, setIsMenuOpen, setShowPwPopup }) {
           </button>
 
           <Link
-            href={"/community"}
+            href={"/"}
             className="flex gap-1 w-fit hover:text-blue-800 transition duration-300"
             onClick={() => {
               setIsMenuOpen(false);

@@ -19,7 +19,7 @@ export default function NoteCard({ note }) {
       }}
     >
       <div
-        className="max-w-none overflow-hidden h-[230px] relative"
+        className="max-w-none overflow-hidden h-[130px] lg:h-[230px] relative"
         dangerouslySetInnerHTML={{ __html: safeHTML }}
       />
       <div className="flex justify-between text-xs text-gray-500 text-right mt-2">

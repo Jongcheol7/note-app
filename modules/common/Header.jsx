@@ -36,7 +36,7 @@ export default function Header() {
         <Link
           href={"/"}
           onClick={() => {
-            setMenuFrom("note");
+            setMenuFrom("");
           }}
         >
           <Home className="text-2xl font-medium text-gray-900 hover:text-red-800 transition-all duration-200">
@@ -63,7 +63,7 @@ export default function Header() {
           setShow={setShowPwPopup}
           onSuccess={() => {
             setShowPwPopup(false);
-            router.push("/notes/secret");
+            router.push("/");
           }}
         />
       )}

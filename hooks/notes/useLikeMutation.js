@@ -6,7 +6,7 @@ export function useLikeMutation() {
   return useMutation({
     mutationFn: async ({ isLike, noteNo }) => {
       console.log("리엑트쿼리 내부 like : ", isLike, noteNo);
-      const res = await axios.post("/api/community/like", {
+      const res = await axios.post("/api/notes/like", {
         isLike: isLike,
         noteNo: noteNo,
       });

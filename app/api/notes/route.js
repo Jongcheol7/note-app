@@ -22,10 +22,15 @@ export async function GET(request) {
   const keyword = searchParams.get("keyword").trim() || "";
   const menuFrom = searchParams.get("menuFrom").trim() || "";
 
+  console.log("라우트내 menu 감지 : ", menuFrom);
+
   const whereCondition = {
-    userId,
-    delDatetime: null,
-    ...(menuFrom === "secret" ? { isSecret: true } : { isSecret: false }),
+    //userId,
+    // ...(menuFrom === "secret" ? { isSecret: true } : { isSecret: false }),
+    // ...(menuFrom === "trash"
+    //   ? { delDatetime: { not: null } }
+    //   : { delDatetime: null }),
+    // ...(menuFrom === "community" ? { isPublic: true } : { isPublic: false }),
     ...(keyword && {
       OR: [
         { title: { contains: keyword, mode: "insensitive" } },
@@ -34,6 +39,25 @@ export async function GET(request) {
     }),
   };
 
+  // 메뉴별 조건 분기
+  if (menuFrom === "") {
+    whereCondition.userId = userId;
+    whereCondition.delDatetime = null;
+    whereCondition.isSecret = false;
+  } else if (menuFrom === "secret") {
+    whereCondition.userId = userId;
+    whereCondition.delDatetime = null;
+    whereCondition.isSecret = true;
+    whereCondition.isPublic = false;
+  } else if (menuFrom === "trash") {
+    whereCondition.userId = userId;
+    whereCondition.delDatetime = { not: null };
+  } else if (menuFrom === "community") {
+    whereCondition.delDatetime = null;
+    whereCondition.isSecret = false;
+    whereCondition.isPublic = true;
+  }
+  console.log("whereCondition : ", whereCondition);
   try {
     const notes = await prisma.note.findMany({
       where: whereCondition,

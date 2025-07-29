@@ -2,13 +2,17 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
+import { NextResponse } from "next/server";
 
 export async function GET() {
   // 사용자 정보 가져오기
   const session = await getServerSession(authOptions);
   if (!session || !session.user) {
     console.error("로그인된 유저가 아닙니다.");
-    return new Response("로그인된 유저가 아닙니다.", { status: 401 });
+    return NextResponse.json(
+      { error: "로그인된 유저가 아닙니다." },
+      { status: 401 }
+    );
   }
   const userId = session.user.id;
 
@@ -19,10 +23,13 @@ export async function GET() {
     });
     const hasPw = !!result?.secretNotePw;
     console.log("api라우트의 hasPw 결과값 : ", hasPw);
-    return Response.json({ hasPw });
+    return NextResponse.json({ hasPw });
   } catch (err) {
     console.error("비밀번호 조회에에 실패했습니다.", err);
-    return new Response("비밀번호 조회에에 실패했습니다.", { status: 500 });
+    return NextResponse.json(
+      { error: "비밀번호 조회에에 실패했습니다." },
+      { status: 500 }
+    );
   }
 }
 
@@ -35,7 +42,10 @@ export async function POST(request) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user) {
     console.error("로그인된 유저가 아닙니다.");
-    return new Response("로그인된 유저가 아닙니다.", { status: 401 });
+    return NextResponse.json(
+      { error: "로그인된 유저가 아닙니다." },
+      { status: 401 }
+    );
   }
   const userId = session.user.id;
 
@@ -48,7 +58,10 @@ export async function POST(request) {
       });
       const isValid = await bcrypt.compare(currentPw, check.secretNotePw ?? "");
       if (!isValid) {
-        return new Response("현재 비밀번호가 다릅니다.", { status: 403 });
+        return NextResponse.json(
+          { error: "현재 비밀번호가 다릅니다." },
+          { status: 403 }
+        );
       }
     }
 
@@ -68,9 +81,15 @@ export async function POST(request) {
       },
     });
 
-    return new Response(JSON.stringify(result), { status: 200 });
+    return NextResponse.json(
+      { result: JSON.stringify(result) },
+      { status: 200 }
+    );
   } catch (err) {
     console.error("비밀번호 설정에 실패했습니다.", err);
-    return new Response("비밀번호 설정에 실패했습니다.", { status: 500 });
+    return NextResponse.json(
+      { error: "비밀번호 설정에 실패했습니다." },
+      { status: 500 }
+    );
   }
 }

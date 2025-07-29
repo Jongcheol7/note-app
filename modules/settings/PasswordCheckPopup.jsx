@@ -1,24 +1,29 @@
+"use client";
 import { useHasPw } from "@/hooks/settings/useHasPw";
 import { useVerifyPw } from "@/hooks/settings/useVerifyPw";
+import { useRouter } from "next/navigation";
 import { useRef } from "react";
+import { toast } from "sonner";
 
 export default function PasswordCheckPopup({ setShow, onSuccess }) {
   const { data: hasPw, isLoading } = useHasPw();
   const { mutate, isPending, isError, error } = useVerifyPw();
   const currentPwRef = useRef();
+  const router = useRouter();
 
   if (isLoading) {
     return null;
   }
 
   if (!hasPw) {
-    alert("비밀번호가 설정되지 않았습니다. 세팅에서 설정후 사용가능합니다.");
-    setShow(false);
-    return null;
+    toast.error(
+      "비밀번호가 설정되지 않았습니다. 세팅에서 설정후 사용가능합니다."
+    );
+    return false;
   }
 
   if (isError) {
-    console.error("에러발생 : ", error);
+    toast.error("에러발생 : ", error);
   }
 
   return (

@@ -1,4 +1,4 @@
-import { CalendarDays, Heart, Lock, Unlock } from "lucide-react";
+import { CalendarDays, Heart, Lock, Save, Trash, Unlock } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useFromStore } from "@/store/useFromStore";
 import { useNoteFormStore } from "@/store/useNoteFormStore";
@@ -8,13 +8,13 @@ import imageCompression from "browser-image-compression";
 import axios from "axios";
 import { toast } from "sonner";
 import { usePublicMutation } from "@/hooks/notes/usePublicMutation";
-import { useLikeMutation } from "@/hooks/community/useLikeMutation";
 import { useNoteMutation } from "@/hooks/notes/useNoteMutation";
 import { useNoteDeleteMutation } from "@/hooks/notes/useNoteDeleteMutation";
 import { useSecretMutation } from "@/hooks/notes/useSecretMutation";
 import ColorPopup from "../common/ColorPopoup";
 import CalenderPopup from "../calendar/CalenderPopup";
 import { HtmlToPlainText } from "@/components/common/HtmlToPlainText";
+import { useLikeMutation } from "@/hooks/notes/useLikeMutation";
 
 export default function NoteToggle1({
   setButtonAction,
@@ -48,7 +48,7 @@ export default function NoteToggle1({
     isPublic,
     setIsPublic,
     isLike,
-    setIsLike,
+    setIslike,
     isSecret,
     setIsSecret,
   } = useNoteFormStore();
@@ -67,9 +67,14 @@ export default function NoteToggle1({
     };
   }, []);
 
+  console.log("데이터값 noteNo: ", noteNo);
+  console.log("데이터값 isPublic: ", isPublic);
+  console.log("데이터값 isLike: ", isLike);
+  console.log("데이터값 isSecret: ", isSecret);
+
   return (
     <div
-      className="absolute right-0 top-0 w-36 py-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg z-20 text-sm space-y-1"
+      className="absolute right-0 top-0 w-38 py-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg z-20 text-sm space-y-1"
       ref={buttonRef}
     >
       {/* 알림 설정 */}
@@ -95,8 +100,13 @@ export default function NoteToggle1({
               secretMutate(
                 { noteNo: noteNo },
                 {
-                  onSuccess: () => setIsSecret(!isSecret),
-                  onError: () => alert("비밀글 설정 실패"),
+                  onSuccess: () => {
+                    setIsSecret(!isSecret);
+                    toast.success(
+                      isSecret ? "비밀글 설정 해제완료" : "비밀글 설정 완료"
+                    );
+                  },
+                  onError: () => toast.error("비밀글 설정 실패"),
                 }
               );
             }
@@ -121,18 +131,17 @@ export default function NoteToggle1({
             likeMutate(
               { isLike: !isLike, noteNo: noteNo },
               {
-                onSuccess: () => setIsLike(!isLike),
-                onError: () => alert("좋아요 실패"),
+                onSuccess: () => {
+                  setIslike(!isLike);
+                  toast.success(isLike ? "종아요 추가" : "좋아요 해제");
+                },
+                onError: () => toast.error("좋아요 실패"),
               }
             );
           }}
           className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
         >
-          <Heart
-            className={`w-5 h-5 ${
-              isLike ? "fill-red-500 text-red-500" : "fill-none text-gray-600"
-            }`}
-          />
+          <Heart className={"w-5 h-5 fill-red-500 text-red-500"} />
           <span className="text-gray-800 dark:text-gray-200">
             좋아요 {likeCnt ? `x${likeCnt}` : ""}
           </span>
@@ -160,6 +169,7 @@ export default function NoteToggle1({
       {/* 공개/비공개 */}
       {menu !== "community" && (
         <button
+          className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
           onClick={() => {
             if (!noteNo) {
               //새글일때는 저장할때 저장되도록 한다.
@@ -172,13 +182,15 @@ export default function NoteToggle1({
                   noteNo: noteNo,
                 },
                 {
-                  onSuccess: () => setIsPublic(!isPublic),
-                  onError: () => alert("공개/비공개 설정 실패"),
+                  onSuccess: () => {
+                    setIsPublic(!isPublic);
+                    toast.success(isPublic ? "해제완료" : "등록완료");
+                  },
+                  onError: () => toast.error("커뮤니티 등록/해제 실패"),
                 }
               );
             }
           }}
-          className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
         >
           <div
             className={`w-5 h-5 rounded-full ${
@@ -186,120 +198,126 @@ export default function NoteToggle1({
             }`}
           />
           <span className="text-gray-800 dark:text-gray-200">
-            {isPublic ? "공개 설정" : "공개 해제"}
+            {isPublic ? "커뮤니티 등록해제" : "커뮤니티 등록"}
           </span>
         </button>
       )}
 
       {/* 저장/삭제 */}
       {menu !== "community" && (
-        <div className="flex justify-between items-center px-3 pt-2">
-          <button
-            className="text-sm text-blue-600 hover:font-bold"
-            disabled={isSaving}
-            onClick={async () => {
-              const html = editor.getHTML();
+        <button
+          className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
+          disabled={isSaving}
+          onClick={async () => {
+            const html = editor.getHTML();
 
-              console.log("html: ", html);
+            console.log("html: ", html);
 
-              //base64 형태인 img 를 골라내자.
-              const matches = [
-                ...html.matchAll(/<img[^>]+src="(data:image\/[^"]+)"[^>]*>/g),
-              ];
+            //base64 형태인 img 를 골라내자.
+            const matches = [
+              ...html.matchAll(/<img[^>]+src="(data:image\/[^"]+)"[^>]*>/g),
+            ];
 
-              let uploadHTML = html;
+            let uploadHTML = html;
 
-              for (let i = 0; i < matches.length; i++) {
-                const fullTag = matches[i][0]; // 전체 <img ...> 태그
-                const base64 = matches[i][1]; // src 안의 base64
+            for (let i = 0; i < matches.length; i++) {
+              const fullTag = matches[i][0]; // 전체 <img ...> 태그
+              const base64 = matches[i][1]; // src 안의 base64
 
-                // base64 → blob -> File 변환
-                const res = await fetch(base64);
-                const blob = await res.blob();
-                const file = new File([blob], `image${i}.jpeg`, {
-                  type: blob.type,
-                });
+              // base64 → blob -> File 변환
+              const res = await fetch(base64);
+              const blob = await res.blob();
+              const file = new File([blob], `image${i}.jpeg`, {
+                type: blob.type,
+              });
 
-                // 압축
-                const compressedFile = await imageCompression(file, {
-                  maxSizeMB: 0.7,
-                  maxWidthOrHeight: 1024,
-                  useWebWorker: true,
-                });
+              // 압축
+              const compressedFile = await imageCompression(file, {
+                maxSizeMB: 0.7,
+                maxWidthOrHeight: 1024,
+                useWebWorker: true,
+              });
 
-                // presigned URL 요청
-                const { data } = await axios.post("/api/notes/upload/image", {
-                  fileType: compressedFile.type,
-                });
+              // presigned URL 요청
+              const { data } = await axios.post("/api/notes/upload/image", {
+                fileType: compressedFile.type,
+              });
 
-                if (data.error) {
-                  throw new Error("Presigned URL 생성 실패");
-                }
-
-                const { uploadUrl, fileUrl } = data;
-
-                //스타일 속성 유지하기
-                const styleMatch = fullTag.match(/style="([^"]*)"/);
-                const styleAttr = styleMatch ? ` style="${styleMatch[1]}"` : "";
-
-                // S3에 업로드
-                await axios.put(uploadUrl, compressedFile, {
-                  headers: {
-                    "Content-Type": compressedFile.type,
-                  },
-                });
-
-                // base64 태그 → 실제 S3 URL로 바꾸기 (해당 <img> 전체 태그 교체)
-                const s3ImgTag = `<img src="${fileUrl}"${styleAttr} />`;
-                uploadHTML = uploadHTML.replace(fullTag, s3ImgTag);
+              if (data.error) {
+                throw new Error("Presigned URL 생성 실패");
               }
 
-              //8. 노트 저장
-              saveMutate(
-                {
-                  noteNo,
-                  title,
-                  categoryNo:
-                    selectedCategoryNo === -1 ? null : selectedCategoryNo,
-                  sortOrder: initialData?.sortOrder ?? null,
-                  content: uploadHTML,
-                  plainText: HtmlToPlainText(uploadHTML),
-                  color: selectedColor,
-                  isSecret,
-                  isPublic,
-                  alarmDatetime,
+              const { uploadUrl, fileUrl } = data;
+
+              //스타일 속성 유지하기
+              const styleMatch = fullTag.match(/style="([^"]*)"/);
+              const styleAttr = styleMatch ? ` style="${styleMatch[1]}"` : "";
+
+              // S3에 업로드
+              await axios.put(uploadUrl, compressedFile, {
+                headers: {
+                  "Content-Type": compressedFile.type,
                 },
-                {
-                  onSuccess: () => {
-                    toast.success("저장 완료");
-                    refetchNote ? refetchNote() : undefined;
-                    router.push("/");
-                  },
-                }
-              );
-            }}
-          >
+              });
+
+              // base64 태그 → 실제 S3 URL로 바꾸기 (해당 <img> 전체 태그 교체)
+              const s3ImgTag = `<img src="${fileUrl}"${styleAttr} />`;
+              uploadHTML = uploadHTML.replace(fullTag, s3ImgTag);
+            }
+
+            //8. 노트 저장
+            saveMutate(
+              {
+                noteNo,
+                title,
+                categoryNo:
+                  selectedCategoryNo === -1 ? null : selectedCategoryNo,
+                sortOrder: initialData?.sortOrder ?? null,
+                content: uploadHTML,
+                plainText: HtmlToPlainText(uploadHTML),
+                color: selectedColor,
+                isSecret,
+                isPublic,
+                alarmDatetime,
+              },
+              {
+                onSuccess: () => {
+                  toast.success("저장 완료");
+                  refetchNote ? refetchNote() : undefined;
+                  router.push("/");
+                },
+              }
+            );
+          }}
+        >
+          <Save className="text-blue-500" />
+          <span className="text-gray-800 dark:text-gray-200">
             {isSaving ? "저장중" : "저장하기"}
-          </button>
-          <button
-            className="text-sm text-red-500 hover:font-bold"
-            disabled={isDeleting}
-            onClick={() => {
-              deleteMutate(
-                { noteNo },
-                {
-                  onSuccess: () => {
-                    toast.success("삭제 완료");
-                    refetchNote();
-                    router.push("/");
-                  },
-                }
-              );
-            }}
-          >
+          </span>
+        </button>
+      )}
+      {menu !== "community" && (
+        <button
+          className="w-full flex items-center gap-2 px-3 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
+          disabled={isDeleting}
+          onClick={() => {
+            deleteMutate(
+              { noteNo },
+              {
+                onSuccess: () => {
+                  toast.success("삭제 완료");
+                  refetchNote();
+                  router.push("/");
+                },
+              }
+            );
+          }}
+        >
+          <Trash className="text-red-500" />
+          <span className="text-gray-800 dark:text-gray-200">
             {isDeleting ? "삭제중" : "삭제하기"}
-          </button>
-        </div>
+          </span>
+        </button>
       )}
 
       {/* 컬러 팝업 */}

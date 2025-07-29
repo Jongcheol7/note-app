@@ -13,5 +13,5 @@ export default function MainLayout({ children }) {
     document.body.style.backgroundColor = color;
   }, [color]);
 
-  return <div>{children}</div>;
+  return <div className="overflow-y-auto scrollbar-none">{children}</div>;
 }
