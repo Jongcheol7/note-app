@@ -44,6 +44,7 @@ export default function Editor({ setEditor, content, menu }) {
         nested: true,
       }),
     ],
+    immediatelyRender: false,
     content: "", // ❌ 초기화 때는 비우고 useEffect에서 setContent 사용
     editable: menu !== "community",
     autofocus: false,

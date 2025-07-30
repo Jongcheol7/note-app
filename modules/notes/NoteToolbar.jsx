@@ -21,6 +21,7 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  SquareCheckBig,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
@@ -215,23 +216,23 @@ export default function NoteToolbar({ editor }) {
 
       {/* 기본 툴바 */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl  mx-auto bg-amber-100 border border-gray-300 rounded-xl px-4 py-2  flex justify-around items-center">
-        {/* r글자크기 버튼 */}
-        <Select
-          onValueChange={(value) => {
-            editor.chain().focus().setFontSize(value).run();
+        {/* 글자크기 버튼 */}
+        <select
+          onChange={(e) => {
+            editor.chain().focus().setFontSize(e.target.value).run();
           }}
+          defaultValue=""
+          className="w-20 h-8 px-2 bg-transparent text-sm border border-gray-300 rounded-md  shadow-sm focus:outline-none focus:ring-2 focus:ring-red-700"
         >
-          <SelectTrigger className="w-[60px] h-8 text-sm border-gray-300">
-            <SelectValue placeholder="16" />
-          </SelectTrigger>
-          <SelectContent className="text-sm">
-            {FONT_SIZES.map((size) => (
-              <SelectItem key={size} value={size}>
-                <span style={{ fontSize: size }}>{size.replace("px", "")}</span>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <option value="" disabled>
+            크기
+          </option>
+          {FONT_SIZES.map((size) => (
+            <option key={size} value={size}>
+              {size.replace("px", "")}
+            </option>
+          ))}
+        </select>
 
         {/* 두껍게 버튼 */}
         <Bold
@@ -281,9 +282,11 @@ export default function NoteToolbar({ editor }) {
           onClick={() => editor.chain().focus().toggleBulletList().run()}
         />
 
-        <button onClick={() => editor.chain().focus().toggleTaskList().run()}>
-          ✅ 체크리스트
-        </button>
+        {/* To-Do 버튼 */}
+        <SquareCheckBig
+          className="w-5 h-5  cursor-pointer hover:text-red-700"
+          onClick={() => editor.chain().focus().toggleTaskList().run()}
+        />
 
         {/* 이모티콘 버튼 */}
         <Smile
