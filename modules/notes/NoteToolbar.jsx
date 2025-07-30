@@ -2,6 +2,13 @@
 
 import { ResizeImageIfNeeded } from "@/components/common/ResizeImageIfNeeded";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Bold,
   List,
   Smile,
@@ -10,9 +17,16 @@ import {
   X,
   Pause,
   Check,
+  Paintbrush,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
+import { HexColorPicker } from "react-colorful";
+
+const FONT_SIZES = ["14px", "16px", "20px", "24px", "28px", "32px"];
 
 export default function NoteToolbar({ editor }) {
   const fileInputRef = useRef(null);
@@ -22,6 +36,7 @@ export default function NoteToolbar({ editor }) {
   const [recordTime, setRecordTime] = useState(0);
   const intervalRef = useRef(null);
   const recorderRef = useRef(null);
+  const [isShowColor, setIsShowColor] = useState(false);
 
   const { data: session, status } = useSession();
   //console.log("session email : ", session?.user.email);
@@ -199,11 +214,46 @@ export default function NoteToolbar({ editor }) {
       </div>
 
       {/* 기본 툴바 */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl  mx-auto bg-amber-100 border border-gray-300 rounded-xl px-4 py-2  flex justify-around">
-        <button onClick={() => editor.chain().focus().toggleBold().run()}>
-          <Bold className="w-5 h-5" />
-        </button>
-        {/* 이미지 업로드 */}
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl  mx-auto bg-amber-100 border border-gray-300 rounded-xl px-4 py-2  flex justify-around items-center">
+        {/* r글자크기 버튼 */}
+        <Select
+          onValueChange={(value) => {
+            editor.chain().focus().setFontSize(value).run();
+          }}
+        >
+          <SelectTrigger className="w-[60px] h-8 text-sm border-gray-300">
+            <SelectValue placeholder="16" />
+          </SelectTrigger>
+          <SelectContent className="text-sm">
+            {FONT_SIZES.map((size) => (
+              <SelectItem key={size} value={size}>
+                <span style={{ fontSize: size }}>{size.replace("px", "")}</span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* 두껍게 버튼 */}
+        <Bold
+          className="w-5 h-5  cursor-pointer hover:text-red-700"
+          onClick={() => editor.chain().focus().toggleBold().run()}
+        />
+
+        {/* 정렬 버튼 */}
+        <AlignLeft
+          className="w-5 h-5 cursor-pointer hover:text-red-700"
+          onClick={() => editor.chain().focus().setTextAlign("left").run()}
+        />
+        <AlignCenter
+          className="w-5 h-5 cursor-pointer hover:text-red-700"
+          onClick={() => editor.chain().focus().setTextAlign("center").run()}
+        />
+        <AlignRight
+          className="w-5 h-5 cursor-pointer hover:text-red-700"
+          onClick={() => editor.chain().focus().setTextAlign("right").run()}
+        />
+
+        {/* 이미지 업로드 버튼 */}
         <input
           type="file"
           accept="image/*"
@@ -211,27 +261,54 @@ export default function NoteToolbar({ editor }) {
           ref={fileInputRef}
           onChange={handleImageSelect}
         />
-        <button onClick={() => fileInputRef.current?.click()}>
-          <ImagePlus className="w-5 h-5" />
-        </button>
-        <button
+        <ImagePlus
+          className="w-5 h-5 cursor-pointer hover:text-red-700"
+          onClick={() => fileInputRef.current?.click()}
+        />
+
+        {/* 녹은 버튼 */}
+        <Mic
+          className="w-5 h-5 cursor-pointer hover:text-red-700"
           onClick={() => {
             alert("관리자만 사용가능");
             return false;
             //setIsRecordClick(true);
           }}
-        >
-          <Mic className="w-5 h-5" />
+        />
+        {/* 리스트 버튼 */}
+        <List
+          className="w-5 h-5  cursor-pointer hover:text-red-700"
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+        />
+
+        <button onClick={() => editor.chain().focus().toggleTaskList().run()}>
+          ✅ 체크리스트
         </button>
-        <button onClick={() => editor.chain().focus().toggleBulletList().run()}>
-          <List className="w-5 h-5" />
-        </button>
-        <button
+
+        {/* 이모티콘 버튼 */}
+        <Smile
+          className={`w-5 h-5 cursor-pointer hover:text-red-700`}
           onClick={() => editor.chain().focus().insertContent("📝").run()}
-        >
-          <Smile className="w-5 h-5" />
-        </button>
+        />
+
+        {/* 글자색 버튼 */}
+        <Paintbrush
+          className={`cursor-pointer hover:text-red-700 ${
+            isShowColor ? "text-red-700" : ""
+          }`}
+          onClick={() => setIsShowColor(!isShowColor)}
+        />
       </div>
+
+      {isShowColor && (
+        <div className="absolute bottom-0 right-0">
+          <HexColorPicker
+            onChange={(newColor) => {
+              editor.chain().focus().setColor(newColor).run();
+            }}
+          />
+        </div>
+      )}
     </>
   );
 }

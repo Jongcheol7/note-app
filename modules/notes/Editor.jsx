@@ -7,6 +7,15 @@ import { useEffect, useRef } from "react";
 import DOMPurify from "dompurify";
 import { ResizableImage } from "@/components/common/ResizableImage";
 import { toast } from "sonner";
+import {
+  Color,
+  FontSize,
+  TextStyle,
+  TextStyleKit,
+} from "@tiptap/extension-text-style";
+import TextAlign from "@tiptap/extension-text-align";
+import TaskList from "@tiptap/extension-task-list";
+import TaskItem from "@tiptap/extension-task-item";
 
 export default function Editor({ setEditor, content, menu }) {
   const safeHTML = DOMPurify.sanitize(content); // content 안에 <img src="data:..." />가 포함됨
@@ -22,6 +31,18 @@ export default function Editor({ setEditor, content, menu }) {
       }),
       //Image,
       ResizableImage,
+      TextStyle,
+      Color,
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+      FontSize.configure({
+        types: ["textStyle"],
+      }),
+      TaskList,
+      TaskItem.configure({
+        nested: true,
+      }),
     ],
     content: "", // ❌ 초기화 때는 비우고 useEffect에서 setContent 사용
     editable: menu !== "community",
@@ -67,6 +88,7 @@ export default function Editor({ setEditor, content, menu }) {
 
       // ✅ content 안의 base64 <img>를 커스텀 노드로 처리
       editor.commands.setContent(safeHTML);
+      //editor.commands.setColor("#ff0000");
       const initImgs = [
         ...safeHTML.matchAll(/src="([^"]+\.(jpeg|jpg|png|webp|gif))"/gi),
       ].map((m) => m[1]);

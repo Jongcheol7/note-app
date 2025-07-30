@@ -137,3 +137,15 @@ html {
 body {
   overflow-x: hidden;
 }
+
+/* 에디터에서 체크박스 글자와 체크박스 한줄에 표현하기 위함 */
+ul[data-type="taskList"] {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+ul[data-type="taskList"] li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
