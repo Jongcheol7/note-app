@@ -5,7 +5,7 @@ import { Heart } from "lucide-react";
 
 export default function NoteCard({ note }) {
   const safeHTML = DOMPurify.sanitize(note.content); //악성스크립트제거
-  const formattedDate = new Date(note.inputDatetime).toLocaleDateString();
+  const formattedDate = new Date(note.modDatetime).toLocaleDateString();
   const router = useRouter();
 
   return (

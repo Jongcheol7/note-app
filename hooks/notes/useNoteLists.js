@@ -10,7 +10,7 @@ export function useNoteLists() {
   const { keyword } = useSearchStore();
   const { menuFrom } = useFromStore();
   return useInfiniteQuery({
-    queryKey: ["noteLists"],
+    queryKey: ["noteLists", keyword, menuFrom],
     queryFn: async ({ pageParam = null }) => {
       const res = await axios.get("/api/notes", {
         params: { cursor: pageParam, limit: 10, keyword, menuFrom },

@@ -30,7 +30,7 @@ export async function POST(request) {
     }
     const result = await prisma.note.update({
       where: { noteNo },
-      data: { isSecret: !note.isSecret },
+      data: { isSecret: !note.isSecret, modDatetime: new Date() },
     });
     return new Response(JSON.stringify(result), { status: 200 });
   } catch (err) {

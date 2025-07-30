@@ -8,7 +8,7 @@ import DOMPurify from "dompurify";
 import { ResizableImage } from "@/components/common/ResizableImage";
 import { toast } from "sonner";
 
-export default function Editor({ onEditorReady, content, menu }) {
+export default function Editor({ setEditor, content, menu }) {
   const safeHTML = DOMPurify.sanitize(content); // content 안에 <img src="data:..." />가 포함됨
   const prevImgsRef = useRef([]);
 
@@ -62,19 +62,17 @@ export default function Editor({ onEditorReady, content, menu }) {
   });
 
   useEffect(() => {
-    if (editor && onEditorReady) {
-      onEditorReady(editor);
+    if (editor && setEditor) {
+      setEditor(editor);
 
       // ✅ content 안의 base64 <img>를 커스텀 노드로 처리
       editor.commands.setContent(safeHTML);
-
       const initImgs = [
         ...safeHTML.matchAll(/src="([^"]+\.(jpeg|jpg|png|webp|gif))"/gi),
       ].map((m) => m[1]);
-
       prevImgsRef.current = initImgs;
     }
-  }, [editor, onEditorReady, safeHTML]);
+  }, [editor, setEditor, safeHTML]);
 
   if (!editor) return null;
 

@@ -13,7 +13,8 @@ import NoteToolbar from "./NoteToolbar";
 import { useCategoryLists } from "@/hooks/category/useCategoryLists";
 
 export default function NoteDetail({ initialData, refetchNote }) {
-  console.log("이니셜데이터 : ", initialData);
+  console.log("🎯 NoteDetail 렌더됨 : ", initialData.noteNo);
+  //console.log("이니셜데이터 : ", initialData);
   const [editor, setEditor] = useState(null);
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
   const { data: categoryData, refetch } = useCategoryLists();
@@ -151,7 +152,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
         onClick={() => editor.chain().focus()}
       >
         <Editor
-          onEditorReady={setEditor}
+          setEditor={setEditor}
           content={initialData?.content ?? ""}
           menu={menu}
         />

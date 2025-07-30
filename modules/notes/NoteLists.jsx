@@ -4,7 +4,6 @@ import { useSearchStore } from "@/store/useSearchStore";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import NoteCard from "./NoteCard";
 import { useNoteLists } from "@/hooks/notes/useNoteLists";
@@ -14,9 +13,8 @@ export default function NoteLists() {
   const observerRef = useRef(null);
   const queryClient = useQueryClient();
   const { keyword } = useSearchStore();
-  const router = useRouter();
 
-  const { menuFrom } = useFromStore();
+  const menuFrom = useFromStore((state) => state.menuFrom);
   console.log("menufrom : ", menuFrom);
 
   const {

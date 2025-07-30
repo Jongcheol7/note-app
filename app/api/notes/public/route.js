@@ -32,7 +32,7 @@ export async function POST(requset) {
 
     const updated = await prisma.note.update({
       where: { noteNo },
-      data: { isPublic },
+      data: { isPublic, modDatetime: new Date() },
     });
     return new Response(JSON.stringify(updated), { status: 200 });
   } catch (err) {
