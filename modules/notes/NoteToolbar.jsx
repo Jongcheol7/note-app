@@ -215,7 +215,7 @@ export default function NoteToolbar({ editor }) {
       </div>
 
       {/* 기본 툴바 */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl  mx-auto bg-amber-100 border border-gray-300 rounded-xl px-4 py-2  flex justify-around items-center">
+      <div className="w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl  mx-auto bg-amber-100 border border-gray-300 rounded-xl px-4 py-2  flex justify-around items-center">
         {/* 글자크기 버튼 */}
         <select
           onChange={(e) => {

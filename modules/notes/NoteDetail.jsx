@@ -79,7 +79,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
 
   return (
     <div
-      className="relative flex flex-col h-[calc(100vh-150px)] px-2 rounded-md"
+      className="relative flex flex-col h-[calc(100vh-100px)] px-2 rounded-md"
       style={bgStyle}
     >
       {/* 카테고리 및 토글버튼 */}
