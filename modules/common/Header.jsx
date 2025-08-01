@@ -13,7 +13,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showPwPopup, setShowPwPopup] = useState(false);
   const { keyword, setKeyword } = useSearchStore();
-  const { setMenuFrom } = useFromStore();
+  const { setMenuFrom, menuFrom } = useFromStore();
 
   const router = useRouter();
 
@@ -27,21 +27,21 @@ export default function Header() {
         >
           ☰
         </button>
-        <Input
-          type="text"
-          placeholder="🔍 메모 검색"
-          onChange={(e) => setKeyword(e.target.value)}
-          className="bg-gray-100 rounded-xl"
-        />
+        {["", "secret", "trash", "community"].includes(menuFrom) && (
+          <Input
+            type="text"
+            placeholder="🔍 메모 검색"
+            onChange={(e) => setKeyword(e.target.value)}
+            className="bg-gray-100 rounded-xl"
+          />
+        )}
         <Link
           href={"/"}
           onClick={() => {
             setMenuFrom("");
           }}
         >
-          <Home className="text-2xl font-medium text-gray-900 hover:text-red-800 transition-all duration-200">
-            🏠
-          </Home>
+          <Home className="text-2xl font-medium text-gray-900 hover:text-red-800 transition-all duration-200" />
         </Link>
       </header>
 

@@ -13,7 +13,7 @@ import NoteToolbar from "./NoteToolbar";
 import { useCategoryLists } from "@/hooks/category/useCategoryLists";
 
 export default function NoteDetail({ initialData, refetchNote }) {
-  console.log("🎯 NoteDetail 렌더됨 : ", initialData.noteNo);
+  //console.log("🎯 NoteDetail 렌더됨 : ", initialData?.noteNo);
   //console.log("이니셜데이터 : ", initialData);
   const [editor, setEditor] = useState(null);
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
@@ -54,6 +54,8 @@ export default function NoteDetail({ initialData, refetchNote }) {
       setIsPublic(initialData.isPublic ?? false);
       setIsLike(initialData?._count.likes > 0 ?? false);
       setIsSecret(initialData.isSecret ?? false);
+    } else {
+      setColor("#FEF3C7");
     }
     if (categoryData) {
       const newCats = categoryData.map((cat) => ({
@@ -74,8 +76,6 @@ export default function NoteDetail({ initialData, refetchNote }) {
     setSelectedCategoryNo,
     setSelectedColor,
   ]);
-
-  console.log("initialData : ", initialData);
 
   return (
     <div

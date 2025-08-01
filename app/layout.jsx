@@ -8,7 +8,7 @@ import MainLayout from "@/modules/common/MainLayout";
 export const metadata = {
   title: "NoteApp",
   icons: {
-    icon: "/note-logo.png", // 또는 "/favicon.png", "/favicon.svg"
+    icon: "/logo.png", // 또는 "/favicon.png", "/favicon.svg"
   },
 };
 
@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
         {/* ✅ 모바일 화면 최적화를 위한 필수 메타 태그 */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>NoteApp</title>
-        <link rel="icon" href="/note-logo.png" />
+        <link rel="icon" href="/logo.png" />
       </head>
       <body className="relative flex flex-col mx-auto sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl px-4 sm:px-6 md:px-8 py-4">
         <SessionWrapper>

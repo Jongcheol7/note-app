@@ -1,9 +1,15 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PasswordPopup from "./PasswordPopup";
+import { useFromStore } from "@/store/useFromStore";
 
 export default function SettingMain() {
   const [showPwPopup, setShowPwPopup] = useState(false);
+  const { setMenuFrom } = useFromStore();
+
+  useEffect(() => {
+    setMenuFrom("settings");
+  }, []);
 
   return (
     <div className="flex flex-col gap-5">

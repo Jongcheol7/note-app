@@ -112,7 +112,7 @@ export default function Editor({ setEditor, content, menu }) {
     >
       <EditorContent
         editor={editor}
-        className={`tiptap h-full w-full  ${
+        className={`tiptap h-full w-full overflow-y-auto scrollbar-none ${
           menu === "community" ? "no-select" : ""
         }`}
         onKeyDown={(e) => {
