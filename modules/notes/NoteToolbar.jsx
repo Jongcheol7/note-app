@@ -236,7 +236,7 @@ export default function NoteToolbar({ editor }) {
 
           {/* 색상 팔레트 */}
           {isColorOpen && (
-            <div className="absolute bottom-full mb-2 right-[-60px] bg-white border border-gray-300 rounded shadow-md p-2 z-50 flex gap-1">
+            <div className="absolute bottom-full mb-2 right-[-20px] bg-white border border-gray-300 rounded shadow-md p-2 z-50 flex gap-1">
               {COLOR_PALETTE.map((color) => (
                 <button
                   key={color}
