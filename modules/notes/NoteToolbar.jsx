@@ -2,111 +2,59 @@
 
 import { ResizeImageIfNeeded } from "@/components/common/ResizeImageIfNeeded";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Bold,
   List,
   Smile,
   ImagePlus,
-  Mic,
-  X,
-  Pause,
-  Check,
   Paintbrush,
   AlignLeft,
   AlignCenter,
   AlignRight,
   SquareCheckBig,
+  Type,
 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import { HexColorPicker } from "react-colorful";
 
 const FONT_SIZES = ["14px", "16px", "20px", "24px", "28px", "32px"];
+const COLOR_PALETTE = [
+  "#000000", // black
+  "#e11d48", // red
+  "#f97316", // orange
+  "#eab308", // yellow
+  "#10b981", // green
+  "#3b82f6", // blue
+  "#8b5cf6", // purple
+  "#ec4899", // pink
+  "#6b7280", // gray
+];
 
 export default function NoteToolbar({ editor }) {
   const fileInputRef = useRef(null);
-  const [isRecordClick, setIsRecordClick] = useState(false); //녹음 창 올릴지 정하기
-  const [recording, setRecording] = useState(false); //녹음 시작버튼을 눌렀는지지
-  const [isPaused, setIsPaused] = useState(false); //일시시정지 버튼을 눌렀는지
-  const [recordTime, setRecordTime] = useState(0);
-  const intervalRef = useRef(null);
-  const recorderRef = useRef(null);
-  const [isShowColor, setIsShowColor] = useState(false);
+  const [isFontSizeOpen, setIsFontSizeOpen] = useState(false);
+  const [isAlignOpen, setIsAlignOpen] = useState(false);
+  const [isColorOpen, setIsColorOpen] = useState(false);
+  const toolbarRef = useRef(null);
 
-  const { data: session, status } = useSession();
-  //console.log("session email : ", session?.user.email);
-
-  // 녹음 시작시 감지해서 실행됨
+  // ✅ 바깥 클릭 감지 → 모든 팝업 닫기
   useEffect(() => {
-    if (recording && !isPaused) {
-      intervalRef.current = setInterval(() => {
-        setRecordTime((prev) => prev + 1);
-      }, 1000);
-    } else {
-      clearInterval(intervalRef.current);
-    }
-
-    return () => clearInterval(intervalRef.current);
-  }, [recording, isPaused]);
-
-  const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    recorderRef.current = new MediaRecorder(stream);
-    recorderRef.current.start();
-    setRecording(true);
-  };
-
-  const stopRecording = () => {
-    const tracks = recorderRef.current?.stream?.getTracks?.();
-    tracks?.forEach((track) => track.stop()); // 마이크 해제
-    recorderRef.current?.stop();
-    setRecording(false);
-    setIsPaused(false);
-    setRecordTime(0); // 필요시 초기화
-    setIsRecordClick(false);
-  };
-
-  if (!editor) return null;
-
-  const formatTime = (seconds) => {
-    const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
-    const secs = String(seconds % 60).padStart(2, "0");
-    return `${mins}:${secs}`;
-  };
-
-  // 녹음 파일 메서드
-  const handleRecordClick = () => {
-    if (!recorderRef.current) return;
-
-    recorderRef.current.ondataavailable = (e) => {
-      const blob = new Blob([e.data], { type: "audio/webm" });
-      const audioUrl = URL.createObjectURL(blob);
-
-      // editor
-      //   .chain()
-      //   .focus()
-      //   .insertContent(`<div data-audio="${audioUrl}"></div>`)
-      //   .run();
-      editor.commands.insertContent({
-        type: "audioBlock",
-        attrs: {
-          src: audioUrl,
-        },
-      });
+    const handleClickOutside = (e) => {
+      if (toolbarRef.current && !toolbarRef.current.contains(e.target)) {
+        setIsFontSizeOpen(false);
+        setIsAlignOpen(false);
+        setIsColorOpen(false);
+      }
     };
 
-    recorderRef.current.stop(); // 여기에 stop 있어야 함
-  };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // 사진 파일 첨부 메서드
   const MAX_IMAGES = 20; //글당 최대 이미지 갯수 제한 2개
-  const MAX_FILE_SIZE_MB = 2; // 개별 이미지 최대 허용 파일 크기 (MB) - 이 용량을 넘으면 경고 후 처리 중단
+  const MAX_FILE_SIZE_MB = 3; // 개별 이미지 최대 허용 파일 크기 (MB) - 이 용량을 넘으면 경고 후 처리 중단
   const MAX_IMAGE_WIDTH = 1200; // 최대 이미지 너비 (픽셀) - 이 너비를 넘으면 리사이징
   const handleImageSelect = (e) => {
     const file = e.target.files?.[0];
@@ -161,99 +109,90 @@ export default function NoteToolbar({ editor }) {
 
   return (
     <>
-      {/* 녹음버튼 슬라이스 */}
-      <div
-        className={`
-                fixed bottom-0 left-1/2 -translate-x-1/2 sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto flex flex-col gap-5 py-4 px-10 h-45 w-full bg-white z-40 font-bold
-                transform transition-transform duration-300
-                ${isRecordClick ? "translate-y-0" : "translate-y-full"}
-        `}
-      >
-        <span className="w-full text-center">{formatTime(recordTime)}</span>
-
-        <div className="flex justify-between px-36">
-          <button
-            onClick={() => setIsRecordClick(false)}
-            className="flex flex-col items-center gap-1"
-          >
-            <X className="w-6 h-6 text-gray-600" />
-            <p className="text-xs text-gray-700">취소</p>
-          </button>
-          <button
-            onClick={() => {
-              if (!recording) {
-                startRecording();
-              } else if (!isPaused) {
-                recorderRef.current?.pause();
-                setIsPaused(true);
-              } else {
-                recorderRef.current?.resume();
-                setIsPaused(false);
-              }
-            }}
-            className="flex flex-col items-center gap-1"
-          >
-            {recording ? (
-              <Pause className="w-6 h-6 text-red-500" />
-            ) : (
-              <Mic className="w-6 h-6 text-red-500" />
-            )}
-            <p className="text-xs text-gray-700">녹음</p>
-          </button>
-          <button
-            onClick={() => {
-              handleRecordClick();
-              stopRecording();
-            }}
-            className="flex flex-col items-center gap-1"
-          >
-            {" "}
-            <Check className="w-6 h-6 text-blue-600" />
-            <p className="text-xs text-gray-700">끝</p>
-          </button>
-        </div>
-      </div>
-
       {/* 기본 툴바 */}
-      <div className="w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl  mx-auto bg-amber-100 border border-gray-300 rounded-xl px-4 py-2  flex justify-around items-center">
-        {/* 글자크기 버튼 */}
-        <select
-          onChange={(e) => {
-            editor.chain().focus().setFontSize(e.target.value).run();
-          }}
-          defaultValue=""
-          className="w-20 h-8 px-2 bg-transparent text-sm border border-gray-300 rounded-md  shadow-sm focus:outline-none focus:ring-2 focus:ring-red-700"
-        >
-          <option value="" disabled>
-            크기
-          </option>
-          {FONT_SIZES.map((size) => (
-            <option key={size} value={size}>
-              {size.replace("px", "")}
-            </option>
-          ))}
-        </select>
+      <div
+        ref={toolbarRef}
+        className="w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl  mx-auto bg-white border border-gray-300 rounded-xl px-4 py-2  flex justify-around items-center"
+      >
+        {/* 글자크기 토글 */}
+        <div className="relative">
+          <Type
+            className="w-5 h-5 cursor-pointer hover:text-red-700"
+            onClick={() => {
+              setIsFontSizeOpen((prev) => !prev);
+              setIsAlignOpen(false);
+              setIsColorOpen(false);
+            }}
+          />
 
+          {isFontSizeOpen && (
+            <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-white border border-gray-300 rounded shadow-md flex flex-col z-50 text-sm">
+              {FONT_SIZES.map((size) => (
+                <button
+                  key={size}
+                  onClick={() => {
+                    //editor.chain().focus().setFontSize(size).run();
+                    setTimeout(() => {
+                      editor.chain().focus().setFontSize(size).run();
+                    }, 0);
+                    setIsFontSizeOpen(false);
+                  }}
+                  className="px-3 py-1 hover:bg-gray-100"
+                >
+                  {size.replace("px", "")}px
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         {/* 두껍게 버튼 */}
         <Bold
           className="w-5 h-5  cursor-pointer hover:text-red-700"
           onClick={() => editor.chain().focus().toggleBold().run()}
         />
+        {/* ✅ 정렬 토글 */}
+        <div className="relative">
+          <AlignCenter
+            className="w-5 h-5 cursor-pointer hover:text-red-700"
+            onClick={() => {
+              setIsFontSizeOpen(false);
+              setIsAlignOpen((prev) => !prev);
+              setIsColorOpen(false);
+            }}
+          />
 
-        {/* 정렬 버튼 */}
-        <AlignLeft
-          className="w-5 h-5 cursor-pointer hover:text-red-700"
-          onClick={() => editor.chain().focus().setTextAlign("left").run()}
-        />
-        <AlignCenter
-          className="w-5 h-5 cursor-pointer hover:text-red-700"
-          onClick={() => editor.chain().focus().setTextAlign("center").run()}
-        />
-        <AlignRight
-          className="w-5 h-5 cursor-pointer hover:text-red-700"
-          onClick={() => editor.chain().focus().setTextAlign("right").run()}
-        />
-
+          {isAlignOpen && (
+            <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-white border border-gray-300 rounded shadow-md flex gap-2 p-3 z-50">
+              <AlignLeft
+                className="w-5 h-5 cursor-pointer hover:text-blue-600"
+                onClick={() => {
+                  setTimeout(() => {
+                    editor.chain().focus().setTextAlign("left").run();
+                  }, 0);
+                  setIsAlignOpen(false);
+                }}
+              />
+              <AlignCenter
+                className="w-5 h-5 cursor-pointer hover:text-blue-600"
+                onClick={() => {
+                  setTimeout(() => {
+                    editor.chain().focus().setTextAlign("center").run();
+                  }, 0);
+                  setIsAlignOpen(false);
+                }}
+              />
+              <AlignRight
+                className="w-5 h-5 cursor-pointer hover:text-blue-600"
+                onClick={() => {
+                  setTimeout(() => {
+                    editor.chain().focus().setTextAlign("right").run();
+                  }, 0);
+                  setIsAlignOpen(false);
+                }}
+              />
+            </div>
+          )}
+        </div>
         {/* 이미지 업로드 버튼 */}
         <input
           type="file"
@@ -266,52 +205,55 @@ export default function NoteToolbar({ editor }) {
           className="w-5 h-5 cursor-pointer hover:text-red-700"
           onClick={() => fileInputRef.current?.click()}
         />
-
-        {/* 녹은 버튼 */}
-        <Mic
-          className="w-5 h-5 cursor-pointer hover:text-red-700"
-          onClick={() => {
-            alert("관리자만 사용가능");
-            return false;
-            //setIsRecordClick(true);
-          }}
-        />
         {/* 리스트 버튼 */}
         <List
           className="w-5 h-5  cursor-pointer hover:text-red-700"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
         />
-
         {/* To-Do 버튼 */}
         <SquareCheckBig
           className="w-5 h-5  cursor-pointer hover:text-red-700"
           onClick={() => editor.chain().focus().toggleTaskList().run()}
         />
-
         {/* 이모티콘 버튼 */}
         <Smile
           className={`w-5 h-5 cursor-pointer hover:text-red-700`}
           onClick={() => editor.chain().focus().insertContent("📝").run()}
         />
-
         {/* 글자색 버튼 */}
-        <Paintbrush
-          className={`cursor-pointer hover:text-red-700 ${
-            isShowColor ? "text-red-700" : ""
-          }`}
-          onClick={() => setIsShowColor(!isShowColor)}
-        />
-      </div>
-
-      {isShowColor && (
-        <div className="absolute bottom-0 right-0">
-          <HexColorPicker
-            onChange={(newColor) => {
-              editor.chain().focus().setColor(newColor).run();
+        <div className="relative">
+          {/* 색상 토글 아이콘 */}
+          <Paintbrush
+            className={`w-5 h-5 cursor-pointer hover:text-red-700 ${
+              isColorOpen ? "text-red-700" : ""
+            }`}
+            onClick={() => {
+              setIsFontSizeOpen(false);
+              setIsAlignOpen(false);
+              setIsColorOpen((prev) => !prev);
             }}
           />
+
+          {/* 색상 팔레트 */}
+          {isColorOpen && (
+            <div className="absolute bottom-full mb-2 right-[-60px] bg-white border border-gray-300 rounded shadow-md p-2 z-50 flex gap-1">
+              {COLOR_PALETTE.map((color) => (
+                <button
+                  key={color}
+                  onClick={() => {
+                    setTimeout(() => {
+                      editor.chain().focus().setColor(color).run();
+                    }, 0);
+                    setIsColorOpen(false);
+                  }}
+                  className="w-6 h-6 rounded-full border border-gray-300"
+                  style={{ backgroundColor: color }}
+                />
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </>
   );
 }

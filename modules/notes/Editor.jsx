@@ -7,15 +7,11 @@ import { useEffect, useRef } from "react";
 import DOMPurify from "dompurify";
 import { ResizableImage } from "@/components/common/ResizableImage";
 import { toast } from "sonner";
-import {
-  Color,
-  FontSize,
-  TextStyle,
-  TextStyleKit,
-} from "@tiptap/extension-text-style";
+import { Color, FontSize, TextStyle } from "@tiptap/extension-text-style";
 import TextAlign from "@tiptap/extension-text-align";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
+import NoteToolbar from "./NoteToolbar";
 
 export default function Editor({ setEditor, content, menu }) {
   const safeHTML = DOMPurify.sanitize(content); // content 안에 <img src="data:..." />가 포함됨
@@ -122,6 +118,7 @@ export default function Editor({ setEditor, content, menu }) {
           }
         }}
       />
+      <NoteToolbar editor={editor} />
     </div>
   );
 }

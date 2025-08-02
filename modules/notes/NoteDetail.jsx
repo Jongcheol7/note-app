@@ -147,17 +147,13 @@ export default function NoteDetail({ initialData, refetchNote }) {
       )}
 
       {/* Editor 영역 */}
-      <div
-        className="flex-1 overflow-y-auto"
-        onClick={() => editor.chain().focus()}
-      >
+      <div className="flex-1" onClick={() => editor.chain().focus()}>
         <Editor
           setEditor={setEditor}
           content={initialData?.content ?? ""}
           menu={menu}
         />
       </div>
-      <NoteToolbar editor={editor} />
     </div>
   );
 }
