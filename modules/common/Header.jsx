@@ -19,7 +19,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="flex justify-between py-3 gap-2 items-center mb-3">
+      <header className="sticky top-0 z-30 bg-opacity-90 backdrop-blur-sm flex justify-between py-3 gap-2 items-center mb-3">
         <button
           className="text-2xl  text-gray-900 hover:text-blue-800 transition-all duration-200"
           aria-label="메뉴 열기"
@@ -47,7 +47,7 @@ export default function Header() {
 
       {isMenuOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-40 z-20 backdrop-blur-sm"
+          className="fixed inset-0 bg-black bg-opacity-40 z-40 backdrop-blur-sm"
           onClick={() => setIsMenuOpen(false)}
         />
       )}

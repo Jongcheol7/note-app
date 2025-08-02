@@ -20,7 +20,7 @@ export default function NavMain({ isMenuOpen, setIsMenuOpen, setShowPwPopup }) {
     <aside
       className={`fixed top-0 left-0 h-full w-64 bg-white shadow-md transform ${
         isMenuOpen ? "translate-x-0" : "-translate-x-full"
-      } transition-transform duration-300 z-30 font-bold`}
+      } transition-transform duration-300 z-50 font-bold`}
     >
       <div className="flex justify-between items-center px-3 py-2 mt-3 mb-7">
         <p className="text-2xl">📒 Dev Note 📒</p>
