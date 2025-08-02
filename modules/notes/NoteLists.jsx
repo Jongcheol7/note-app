@@ -98,7 +98,7 @@ export default function NoteLists() {
           categoryData.map((cat) => (
             <button
               key={cat.categoryNo}
-              className={`bg-white px-2 py-1 rounded-full shrink-0 ${
+              className={`px-2 py-1 rounded-full shrink-0 border transition duration-200 ${
                 categoryName === cat.name
                   ? "bg-gray-500 text-white border-gray-500 font-semibold"
                   : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
