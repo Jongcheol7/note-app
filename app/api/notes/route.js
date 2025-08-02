@@ -21,6 +21,7 @@ export async function GET(request) {
   const limit = Number(searchParams.get("limit"));
   const keyword = searchParams.get("keyword").trim() || "";
   const menuFrom = searchParams.get("menuFrom").trim() || "";
+  const categoryName = searchParams.get("categoryName").trim() || "";
 
   console.log("라우트내 menu 감지 : ", menuFrom);
 
@@ -60,7 +61,15 @@ export async function GET(request) {
   console.log("whereCondition : ", whereCondition);
   try {
     const notes = await prisma.note.findMany({
-      where: whereCondition,
+      where: {
+        ...whereCondition,
+        ...(categoryName && {
+          category: {
+            userId,
+            name: categoryName,
+          },
+        }),
+      },
       include: {
         _count: {
           select: { likes: true },
