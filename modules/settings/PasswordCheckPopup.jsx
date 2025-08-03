@@ -1,6 +1,7 @@
 "use client";
 import { useHasPw } from "@/hooks/settings/useHasPw";
 import { useVerifyPw } from "@/hooks/settings/useVerifyPw";
+import { useFromStore } from "@/store/useFromStore";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { toast } from "sonner";
@@ -10,6 +11,7 @@ export default function PasswordCheckPopup({ setShow, onSuccess }) {
   const { mutate, isPending, isError, error } = useVerifyPw();
   const currentPwRef = useRef();
   const router = useRouter();
+  const { menuFrom, setMenuFrom } = useFromStore();
 
   if (isLoading) {
     return null;
@@ -28,9 +30,9 @@ export default function PasswordCheckPopup({ setShow, onSuccess }) {
 
   return (
     <div>
-      <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 bg-white px-5 py-7 rounded-xl z-50 shadow-lg">
-        <div className="flex flex-col">
-          <label className="text-sm font-medium mt-3">비밀번호</label>
+      <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 bg-white px-5 py-3 rounded-xl z-40 shadow-lg">
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-bold text-gray-700">비밀번호</label>
           <input
             className="bg-gray-300 px-3 py-1 rounded-md"
             ref={currentPwRef}
@@ -38,15 +40,18 @@ export default function PasswordCheckPopup({ setShow, onSuccess }) {
             autoFocus
           />
         </div>
-        <div className="flex justify-center gap-3">
+        <div className="flex justify-center gap-3 mt-2">
           <button
-            className="text-blue-500 font-bold hover:text-blue-700"
+            className="text-blue-500 font-bold hover:text-blue-700 hover:bg-gray-200 bg-gray-300 px-3 py-1 rounded-full"
             disabled={isPending}
             onClick={() => {
               mutate(
                 { password: currentPwRef.current.value },
                 {
-                  onSuccess: () => onSuccess(),
+                  onSuccess: () => {
+                    setMenuFrom("secret");
+                    onSuccess();
+                  },
                 }
               );
             }}
@@ -54,7 +59,7 @@ export default function PasswordCheckPopup({ setShow, onSuccess }) {
             {isPending ? "확인중" : "확인"}
           </button>
           <button
-            className="text-gray-500 font-bold hover:text-gray-700"
+            className="text-red-500 font-bold hover:text-red-700 hover:bg-gray-200 bg-gray-300 px-3 py-1 rounded-full"
             onClick={() => setShow(false)}
           >
             취소
@@ -62,7 +67,7 @@ export default function PasswordCheckPopup({ setShow, onSuccess }) {
         </div>
       </div>
       <div
-        className="fixed inset-0 bg-black bg-opacity-60 z-20"
+        className="fixed inset-0 bg-black bg-opacity-60 z-30 backdrop-blur-sm"
         onClick={() => setShow(false)}
       />
     </div>

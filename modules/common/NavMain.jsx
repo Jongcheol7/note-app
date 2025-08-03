@@ -67,7 +67,7 @@ export default function NavMain({ isMenuOpen, setIsMenuOpen, setShowPwPopup }) {
             onClick={() => {
               setIsMenuOpen(false);
               setShowPwPopup(true);
-              setMenuFrom("secret");
+              // setMenuFrom("secret");
             }}
             className="flex gap-1 w-fit hover:text-blue-800 transition duration-300"
           >

@@ -33,8 +33,6 @@ export default function NoteLists() {
 
   const { data: categoryData } = useCategoryLists();
 
-  console.log("카테고리 조회해보자 dd : ", categoryData);
-
   // ✅ keyword가 바뀌면 기존 noteLists 데이터를 리셋
   useEffect(() => {
     queryClient.removeQueries({ queryKey: ["noteLists"] });

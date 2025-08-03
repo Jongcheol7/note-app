@@ -44,7 +44,7 @@ export default function PasswordPopup({ setShow }) {
 
   return (
     <div>
-      <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 bg-white px-5 py-7 rounded-xl z-50 shadow-lg">
+      <div className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 bg-white px-5 py-7 rounded-xl z-40 shadow-lg">
         <p className="text-xl font-bold text-center">비밀번호 설정</p>
         {hasPw && (
           <div className="flex flex-col">
@@ -93,7 +93,7 @@ export default function PasswordPopup({ setShow }) {
         </div>
       </div>
       <div
-        className="fixed inset-0 bg-black bg-opacity-60 z-20"
+        className="fixed inset-0 bg-black bg-opacity-60 z-30 backdrop-blur-sm"
         onClick={() => setShow(false)}
       />
     </div>

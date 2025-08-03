@@ -1,6 +1,7 @@
 "use client";
 
 import { ResizeImageIfNeeded } from "@/components/common/ResizeImageIfNeeded";
+import { useFromStore } from "@/store/useFromStore";
 import {
   Bold,
   List,
@@ -14,7 +15,6 @@ import {
   Type,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { HexColorPicker } from "react-colorful";
 
 const FONT_SIZES = ["14px", "16px", "20px", "24px", "28px", "32px"];
 const COLOR_PALETTE = [
@@ -35,6 +35,7 @@ export default function NoteToolbar({ editor }) {
   const [isAlignOpen, setIsAlignOpen] = useState(false);
   const [isColorOpen, setIsColorOpen] = useState(false);
   const toolbarRef = useRef(null);
+  const { menuFrom } = useFromStore();
 
   // ✅ 바깥 클릭 감지 → 모든 팝업 닫기
   useEffect(() => {
@@ -104,15 +105,14 @@ export default function NoteToolbar({ editor }) {
     };
 
     reader.readAsDataURL(file);
-    console.log("editor.getHTML() : ", editor.getHTML());
   };
-
   return (
     <>
       {/* 기본 툴바 */}
       <div
         ref={toolbarRef}
-        className="w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl  mx-auto bg-white border border-gray-300 rounded-xl px-4 py-2  flex justify-around items-center"
+        className={`w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl  mx-auto bg-white border border-gray-300 rounded-xl px-4 py-2  flex justify-around items-center
+          ${menuFrom === "community" ? "hidden" : "block"}`}
       >
         {/* 글자크기 토글 */}
         <div className="relative">
