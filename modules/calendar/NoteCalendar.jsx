@@ -44,7 +44,7 @@ export default function NoteCalendar() {
         tileClassName={({ date }) => {
           const isToday =
             format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
-          return isToday ? "bg-blue-100 rounded-full font-bold" : "";
+          return isToday ? "bg-blue-100 font-bold" : "";
         }}
         // 📌 날짜 셀 내용 커스터마이징
         tileContent={({ date }) => {
@@ -56,7 +56,7 @@ export default function NoteCalendar() {
               {dayNotes.map((note) => (
                 <div
                   key={note.noteNo}
-                  className="text-[10px] text-blue-600 w-full cursor-pointer hover:underline"
+                  className="text-[10px] text-blue-600 w-full font-bold cursor-pointer hover:underline"
                   onClick={(e) => {
                     e.stopPropagation();
                     router.push(`/notes/${note.noteNo}`);

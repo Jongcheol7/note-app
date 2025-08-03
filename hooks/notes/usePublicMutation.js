@@ -13,7 +13,8 @@ export function usePublicMutation() {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["noteLists", "noteDetail"]);
+      queryClient.invalidateQueries(["noteList"]);
+      queryClient.invalidateQueries(["noteDetail"]);
     },
     onError: (err) => console.log("공개여부 업데이트 실패 :", err),
   });

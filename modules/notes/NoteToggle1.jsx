@@ -67,11 +67,6 @@ export default function NoteToggle1({
     };
   }, []);
 
-  console.log("데이터값 noteNo: ", noteNo);
-  console.log("데이터값 isPublic: ", isPublic);
-  console.log("데이터값 isLike: ", isLike);
-  console.log("데이터값 isSecret: ", isSecret);
-
   return (
     <div
       className="absolute right-0 top-0 w-38 py-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg z-20 text-sm space-y-1"
@@ -339,7 +334,12 @@ export default function NoteToggle1({
       )}
 
       {/* 달력 팝업 */}
-      {showCalendarPopup && <CalenderPopup setShow={setShowCalendarPopup} />}
+      {showCalendarPopup && (
+        <CalenderPopup
+          setShow={setShowCalendarPopup}
+          setButtonAction={setButtonAction}
+        />
+      )}
     </div>
   );
 }
