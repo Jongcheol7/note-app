@@ -9,7 +9,7 @@ export default function NoteToggle2({ noteNo, setButtonAction }) {
   const { mutate: trashDeleteMutate, isPending: isTrashDeleting } =
     useTrashDelete();
   return (
-    <div className="absolute right-0 top-0 w-36 py-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg z-20 text-sm space-y-1">
+    <div className="absolute right-0 top-0 w-36 py-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg z-50 text-sm space-y-1">
       <button
         className="w-full flex items-center gap-2 px-3 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition text-left"
         disabled={isRecovering}

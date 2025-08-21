@@ -69,7 +69,7 @@ export default function NoteToggle1({
 
   return (
     <div
-      className="absolute right-0 top-0 w-38 py-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg z-20 text-sm space-y-1"
+      className="absolute right-0 top-0 w-38 py-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg z-50 text-sm space-y-1"
       ref={buttonRef}
     >
       {/* 알림 설정 */}
