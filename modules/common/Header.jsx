@@ -19,7 +19,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-30 bg-opacity-90 backdrop-blur-sm flex justify-between py-3 gap-2 items-center">
+      <header className="sticky top-0 z-30 bg-opacity-90 backdrop-blur-sm flex justify-between pt-3 pb-2 gap-2 items-center">
         <button
           className="text-2xl  text-gray-900 hover:text-blue-800 transition-all duration-200"
           aria-label="메뉴 열기"
