@@ -79,13 +79,13 @@ export default function NoteDetail({ initialData, refetchNote }) {
 
   return (
     <div
-      className="relative pt-0 mt-0 flex flex-col h-[calc(100vh-100px)] px-2 rounded-md"
+      className="relative pt-0 mt-0 flex flex-col min-h-screen px-2 rounded-md"
       style={bgStyle}
     >
       {/* 카테고리 및 토글버튼 */}
       <div className="sticky top-14 z-30 bg-opacity-90 backdrop-blur-sm flex justify-between gap-3">
         <select
-          className="max-w-[200px] px-2 py-1 rounded-md text-sm"
+          className="max-w-[200px] px-2 py-1 rounded-md border text-sm"
           style={bgStyle}
           disabled={menu === "community"}
           value={selectedCategoryNo}
@@ -114,7 +114,7 @@ export default function NoteDetail({ initialData, refetchNote }) {
       </div>
 
       {/* 제목 INPUT */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center mt-1">
         <Input
           type="text"
           placeholder="제목을 입력하세요"
