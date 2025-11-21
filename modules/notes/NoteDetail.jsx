@@ -11,6 +11,15 @@ import NoteToggle2 from "./NoteToggle2";
 import Editor from "./Editor";
 import NoteToolbar from "./NoteToolbar";
 import { useCategoryLists } from "@/hooks/category/useCategoryLists";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function NoteDetail({ initialData, refetchNote }) {
   //console.log("🎯 NoteDetail 렌더됨 : ", initialData?.noteNo);
@@ -84,27 +93,31 @@ export default function NoteDetail({ initialData, refetchNote }) {
     >
       {/* 카테고리 및 토글버튼 */}
       <div className="sticky top-14 z-30 bg-opacity-90 backdrop-blur-sm flex justify-between gap-3">
-        <select
-          className="max-w-[200px] px-2 py-1 rounded-md border text-sm"
-          style={bgStyle}
-          disabled={menu === "community"}
+        <Select
+          disabled={menu === "comunity"}
           value={selectedCategoryNo}
-          onChange={(e) => {
-            const selected = e.target.value;
-            o;
-            if (selected === "-2") {
+          onValueChange={(value) => {
+            if (value === "-2") {
               setShowCategoryPopup(true);
             } else {
-              setSelectedCategoryNo(Number(selected));
+              setSelectedCategoryNo(Number(value));
             }
           }}
         >
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select a fruit" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {categories.map((cat) => (
+                <SelectItem key={cat.id} value={cat.id}>
+                  {cat.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
         <EllipsisIcon
           className="cursor-pointer"
           onClick={() => {
