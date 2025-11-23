@@ -88,16 +88,16 @@ export default function NoteDetail({ initialData, refetchNote }) {
 
   return (
     <div
-      className="relative pt-0 mt-0 flex flex-col min-h-screen px-2 rounded-md"
+      className="relative flex flex-col p-2 rounded-md border"
       style={bgStyle}
     >
-      {/* 카테고리 및 토글버튼 */}
-      <div className="sticky top-14 z-30 bg-opacity-90 backdrop-blur-sm flex justify-between gap-3">
+      {/* 카테고리 / 제목 / 메뉴 버튼 */}
+      <div className="sticky top-14 z-30 bg-opacity-90 backdrop-blur-sm flex justify-between gap-3 items-center">
         <Select
           disabled={menu === "comunity"}
           value={selectedCategoryNo}
           onValueChange={(value) => {
-            if (value === "-2") {
+            if (Number(value) === -2) {
               setShowCategoryPopup(true);
             } else {
               setSelectedCategoryNo(Number(value));
@@ -118,6 +118,16 @@ export default function NoteDetail({ initialData, refetchNote }) {
           </SelectContent>
         </Select>
 
+        <Input
+          type="text"
+          placeholder="제목을 입력하세요"
+          className="bg-amber-100 text-xl font-semibold flex-1 mr-5"
+          onChange={(e) => setTitle(e.target.value)}
+          value={title}
+          style={bgStyle}
+          readOnly={menu === "community"}
+        />
+
         <EllipsisIcon
           className="cursor-pointer"
           onClick={() => {
@@ -126,20 +136,16 @@ export default function NoteDetail({ initialData, refetchNote }) {
         />
       </div>
 
-      {/* 제목 INPUT */}
-      <div className="flex items-center mt-1">
-        <Input
-          type="text"
-          placeholder="제목을 입력하세요"
-          className="bg-amber-100 text-xl font-semibold flex-1"
-          onChange={(e) => setTitle(e.target.value)}
-          value={title}
-          style={bgStyle}
-          readOnly={menu === "community"}
+      {/* Editor 영역 */}
+      <div className="flex-1" onClick={() => editor.chain().focus()}>
+        <Editor
+          setEditor={setEditor}
+          content={initialData?.content ?? ""}
+          menu={menu}
         />
       </div>
 
-      {/* 카테고리 팝업 */}
+      {/* 팝업 영억 (카테고리, 메뉴토글) */}
       {showCategoryPopup && (
         <CategoryPopup setShow={setShowCategoryPopup} refetch={refetch} />
       )}
@@ -159,15 +165,6 @@ export default function NoteDetail({ initialData, refetchNote }) {
           initialData={initialData}
         />
       )}
-
-      {/* Editor 영역 */}
-      <div className="flex-1" onClick={() => editor.chain().focus()}>
-        <Editor
-          setEditor={setEditor}
-          content={initialData?.content ?? ""}
-          menu={menu}
-        />
-      </div>
     </div>
   );
 }

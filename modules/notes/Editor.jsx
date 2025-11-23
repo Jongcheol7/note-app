@@ -97,7 +97,7 @@ export default function Editor({ setEditor, content, menu }) {
 
   return (
     <div
-      className={`h-full`}
+      className="flex flex-col h-[80vh]"
       onCopy={menu === "community" ? (e) => e.preventDefault() : undefined}
       onPaste={menu === "community" ? (e) => e.preventDefault() : undefined}
       onCut={menu === "community" ? (e) => e.preventDefault() : undefined}
@@ -108,7 +108,7 @@ export default function Editor({ setEditor, content, menu }) {
     >
       <EditorContent
         editor={editor}
-        className={`tiptap h-full w-full overflow-y-auto scrollbar-none ${
+        className={`tiptap overflow-y-auto scrollbar-none flex-1 ${
           menu === "community" ? "no-select" : ""
         }`}
         onKeyDown={(e) => {
