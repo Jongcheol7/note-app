@@ -30,9 +30,9 @@ export default function Header() {
         {["", "secret", "trash", "community"].includes(menuFrom) && (
           <Input
             type="text"
-            placeholder="🔍 메모 검색"
+            placeholder="메모 검색"
             onChange={(e) => setKeyword(e.target.value)}
-            className="bg-gray-100 rounded-xl"
+            className="bg-white rounded-md"
           />
         )}
         <Link
