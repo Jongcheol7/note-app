@@ -94,6 +94,7 @@ export async function POST(requset) {
         isPublic,
         alarmDatetime: kstDate,
         sortOrder: sortOrder ?? sortOrderValue,
+        modDatetime: new Date(),
       },
     });
 
