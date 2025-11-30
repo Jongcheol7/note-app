@@ -9,21 +9,17 @@ import CategoryPopup from "../category/CategoryPopup";
 import NoteToggle1 from "./NoteToggle1";
 import NoteToggle2 from "./NoteToggle2";
 import Editor from "./Editor";
-import NoteToolbar from "./NoteToolbar";
 import { useCategoryLists } from "@/hooks/category/useCategoryLists";
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 
 export default function NoteDetail({ initialData, refetchNote }) {
-  //console.log("🎯 NoteDetail 렌더됨 : ", initialData?.noteNo);
-  //console.log("이니셜데이터 : ", initialData);
   const [editor, setEditor] = useState(null);
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
   const { data: categoryData, refetch } = useCategoryLists();
@@ -46,8 +42,6 @@ export default function NoteDetail({ initialData, refetchNote }) {
     setIsSecret,
     reset,
   } = useNoteFormStore();
-
-  //const likeCnt = initialData?._count.likes;
 
   // Zustand
   const { menuFrom: menu } = useFromStore();
@@ -92,9 +86,9 @@ export default function NoteDetail({ initialData, refetchNote }) {
       style={bgStyle}
     >
       {/* 카테고리 / 제목 / 메뉴 버튼 */}
-      <div className="sticky top-14 z-30 bg-opacity-90 backdrop-blur-sm flex flex-col sm:flex-row justify-between gap-3">
+      <div className="sticky top-14 z-30 bg-opacity-90 backdrop-blur-sm flex flex-col sm:flex-row justify-between gap-3 sm:items-center ">
         <div className="flex flex-1 flex-col sm:flex-row gap-1">
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center">
             <Select
               disabled={menu === "comunity"}
               value={selectedCategoryNo}

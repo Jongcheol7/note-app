@@ -118,7 +118,7 @@ export default function Editor({ setEditor, content, menu }) {
           }
         }}
       />
-      <div className="sticky bottom-0 bg-opacity-90 backdrop-blur-sm">
+      <div className="sticky bottom-4 bg-opacity-90 backdrop-blur-sm">
         <NoteToolbar editor={editor} />
       </div>
     </div>
