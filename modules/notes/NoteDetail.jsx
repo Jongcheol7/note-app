@@ -92,44 +92,55 @@ export default function NoteDetail({ initialData, refetchNote }) {
       style={bgStyle}
     >
       {/* 카테고리 / 제목 / 메뉴 버튼 */}
-      <div className="sticky top-14 z-30 bg-opacity-90 backdrop-blur-sm flex justify-between gap-3 items-center">
-        <Select
-          disabled={menu === "comunity"}
-          value={selectedCategoryNo}
-          onValueChange={(value) => {
-            if (Number(value) === -2) {
-              setShowCategoryPopup(true);
-            } else {
-              setSelectedCategoryNo(Number(value));
-            }
-          }}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select a fruit" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {categories.map((cat) => (
-                <SelectItem key={cat.id} value={cat.id}>
-                  {cat.name}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+      <div className="sticky top-14 z-30 bg-opacity-90 backdrop-blur-sm flex flex-col sm:flex-row justify-between gap-3">
+        <div className="flex flex-1 flex-col sm:flex-row gap-1">
+          <div className="flex justify-between">
+            <Select
+              disabled={menu === "comunity"}
+              value={selectedCategoryNo}
+              onValueChange={(value) => {
+                if (Number(value) === -2) {
+                  setShowCategoryPopup(true);
+                } else {
+                  setSelectedCategoryNo(Number(value));
+                }
+              }}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select a fruit" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
 
-        <Input
-          type="text"
-          placeholder="제목을 입력하세요"
-          className="bg-amber-100 text-xl font-semibold flex-1 mr-5"
-          onChange={(e) => setTitle(e.target.value)}
-          value={title}
-          style={bgStyle}
-          readOnly={menu === "community"}
-        />
+            <EllipsisIcon
+              className="cursor-pointer sm:hidden"
+              onClick={() => {
+                setButtonAction(!buttonAction);
+              }}
+            />
+          </div>
+
+          <Input
+            type="text"
+            placeholder="제목을 입력하세요"
+            className="bg-amber-100 text-xl font-semibold flex-1 mr-5"
+            onChange={(e) => setTitle(e.target.value)}
+            value={title}
+            style={bgStyle}
+            readOnly={menu === "community"}
+          />
+        </div>
 
         <EllipsisIcon
-          className="cursor-pointer"
+          className="cursor-pointer hidden sm:block"
           onClick={() => {
             setButtonAction(!buttonAction);
           }}
