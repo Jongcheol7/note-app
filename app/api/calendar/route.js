@@ -17,8 +17,8 @@ export async function GET(request) {
     return new Response("연도와 월이 필요합니다.", { status: 400 });
   }
 
-  const start = new Date(year, month - 1, 1);
-  const end = new Date(year, month, 0, 23, 59, 59); // 해당 월 마지막날
+  const start = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0));
+  const end = new Date(Date.UTC(year, month, 0, 23, 59, 59));
 
   const notes = await prisma.note.findMany({
     where: {

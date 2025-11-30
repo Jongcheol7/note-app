@@ -1,27 +1,37 @@
 "use client";
 import Calendar from "react-calendar";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { format } from "date-fns";
+import { addHours, format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { useMonthlyAlarms } from "@/hooks/calendar/useMonthlyAlarms";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function NoteCalendar() {
   const [date, setDate] = useState(new Date());
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
+  console.log("NoteCalendar year:", year, "month:", month);
 
   const { data: notes } = useMonthlyAlarms(year, month);
+  useEffect(() => {
+    queryClient.invalidateQueries(["monthlyAlarms", year, month]);
+  }, [date]);
 
   const noteMap = useMemo(() => {
     const map = {};
     notes?.forEach((note) => {
-      const key = format(new Date(note.alarmDatetime), "yyyy-MM-dd");
+      const key = format(
+        addHours(new Date(note.alarmDatetime), -9),
+        "yyyy-MM-dd"
+      );
       if (!map[key]) map[key] = [];
       map[key].push(note);
     });
+    console.log("noteMap in NoteCalendar: ", map);
     return map;
   }, [notes]);
 
@@ -29,6 +39,9 @@ export default function NoteCalendar() {
     <div className="p-2  mx-auto">
       <Calendar
         onChange={setDate}
+        onActiveStartDateChange={({ activeStartDate }) => {
+          setDate(activeStartDate); // month 변경 반영
+        }}
         value={date}
         locale="ko-KR"
         // 📌 년/월 출력 포맷 변경
@@ -50,13 +63,12 @@ export default function NoteCalendar() {
         tileContent={({ date }) => {
           const key = format(date, "yyyy-MM-dd");
           const dayNotes = noteMap[key] || [];
-
           return (
             <div className="mt-1 flex flex-col items-start min-h-[40px]">
               {dayNotes.map((note) => (
                 <div
                   key={note.noteNo}
-                  className="text-[10px] text-blue-600 w-full font-bold cursor-pointer hover:underline"
+                  className="text-[11px] text-red-600 w-full font-bold cursor-pointer hover:underline"
                   onClick={(e) => {
                     e.stopPropagation();
                     router.push(`/notes/${note.noteNo}`);
@@ -80,9 +92,6 @@ export default function NoteCalendar() {
         next2Label={null}
         prev2Label={null}
       />
-      <p className="mt-4 text-sm text-center text-gray-700">
-        선택된 날짜: {date.toLocaleDateString("ko-KR")}
-      </p>
     </div>
   );
 }

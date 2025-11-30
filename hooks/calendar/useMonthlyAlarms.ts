@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-export function useMonthlyAlarms(year, month) {
+export function useMonthlyAlarms(year: number, month: number) {
   return useQuery({
     queryKey: ["monthlyAlarms", year, month],
     queryFn: async () => {
