@@ -29,6 +29,14 @@ export const authOptions = {
       }
       return session;
     },
+
+    // Google 로그인 명시적 허용 (핵심)
+    async signIn({ account }) {
+      if (account?.provider === "google") {
+        return true;
+      }
+      return false;
+    },
   },
 };
 
