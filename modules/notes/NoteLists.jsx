@@ -57,7 +57,8 @@ export default function NoteLists() {
     };
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  if (isFetching && !isFetchingNextPage)
+  const isInitialLoading = isFetching && !data;
+  if (isInitialLoading)
     return (
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <Loader2 className="w-10 h-10 animate-spin text-gray-500" />

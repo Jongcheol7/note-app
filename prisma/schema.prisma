@@ -120,6 +120,8 @@ model Note {
   inputDatetime DateTime  @default(now())
   modDatetime   DateTime?
   delDatetime   DateTime?
+  isPinned      Boolean   @default(false)
+  pinDatetime   DateTime?
 
   tags    Tags[]
   likes   Like[]

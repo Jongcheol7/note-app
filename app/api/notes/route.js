@@ -79,9 +79,11 @@ export async function GET(request) {
           select: { userId: true },
         },
       },
-      orderBy: {
-        sortOrder: "asc",
-      },
+      orderBy: [
+        { isPinned: "desc" },
+        { pinDatetime: "desc" },
+        { modDatetime: "desc" },
+      ],
       cursor: cursor ? { noteNo: Number(cursor) } : undefined,
       skip: cursor ? 1 : 0,
       take: limit,
