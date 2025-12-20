@@ -4,11 +4,13 @@ import { useRouter } from "next/navigation";
 import { Heart, Star } from "lucide-react";
 import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { usePinMutation } from "@/hooks/notes/usePinMutation";
+import { useFromStore } from "@/store/useFromStore";
 
 export default function NoteCard({ note }) {
   const safeHTML = DOMPurify.sanitize(note.content); //악성스크립트제거
   const formattedDate = new Date(note.modDatetime).toLocaleDateString();
   const { mutate: pinMutate, isPending: isPinning } = usePinMutation();
+  const { menuFrom } = useFromStore();
   const router = useRouter();
   const bgColor = note.color;
   const defaultColor = "#fef3c7";
@@ -20,18 +22,21 @@ export default function NoteCard({ note }) {
         style={{ backgroundColor: bgColor ?? defaultColor }}
       >
         <p className="flex-1">{note.title || "No Title"}</p>
-        <button
-          onClick={() =>
-            pinMutate({ isPinned: !note.isPinned, noteNo: note.noteNo })
-          }
-          disabled={isPinning}
-        >
-          <Star
-            size={18}
-            strokeWidth={2}
-            fill={note.isPinned ? "red" : "none"}
-          />
-        </button>
+        {menuFrom == "" && (
+          <button
+            onClick={() =>
+              pinMutate({ isPinned: !note.isPinned, noteNo: note.noteNo })
+            }
+            disabled={isPinning}
+          >
+            <Star
+              size={18}
+              strokeWidth={2}
+              //fill={note.isPinned ? "red" : "none"}
+              className={`${note?.isPinned ? "fill-red-500" : "none"}`}
+            />
+          </button>
+        )}
       </CardTitle>
       <CardContent
         className="flex-1 overflow-hidden cursor-pointer "
