@@ -128,6 +128,10 @@ model Note {
 
   user          User      @relation(fields:[userId], references:[id])
   category      Category? @relation(fields:[categoryNo],references:[categoryNo])
-  
+
+  @@index([userId, delDatetime, isPinned, pinDatetime, modDatetime])
+  @@index([userId, isSecret])
+  @@index([isPublic, delDatetime])
+  @@index([categoryNo])
   @@map("note")
 }

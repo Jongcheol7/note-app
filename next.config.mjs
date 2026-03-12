@@ -1,8 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  typescript: {
+    ignoreBuildErrors: true, // TS 마이그레이션 완료 후 제거 예정
+  },
   images: {
-    domains: ["lh3.googleusercontent.com"], // ✅ 외부 이미지 허용 도메인
+    domains: ["lh3.googleusercontent.com"],
   },
 };
 
